@@ -1,0 +1,30 @@
+\babel@toc {english}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Gradual responses to file changes according to thresholds set by the admin.\relax }}{8}{figure.caption.7}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Example architecture of system with honeypot and machine learning.\relax }}{9}{figure.caption.10}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Structure of DShield honeypot\relax }}{11}{figure.caption.11}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Flow of attack in DShield and Galastopf\relax }}{12}{figure.caption.12}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Structure of SNARE and TANNER\relax }}{13}{figure.caption.13}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Structure of the honeypot\relax }}{14}{figure.caption.14}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Structure of the honeyd\relax }}{15}{figure.caption.15}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Implementation of honeyd\relax }}{16}{figure.caption.16}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces TCP handshake protocol\relax }}{18}{figure.caption.17}%
+\contentsline {figure}{\numberline {3.10}{\ignorespaces TCP SYN flood attack\relax }}{18}{figure.caption.18}%
+\contentsline {figure}{\numberline {3.11}{\ignorespaces An example on MITM attack\relax }}{19}{figure.caption.19}%
+\contentsline {figure}{\numberline {3.12}{\ignorespaces A possible system structure for the MITM honeypot.\relax }}{20}{figure.caption.20}%
+\contentsline {figure}{\numberline {3.13}{\ignorespaces A possible structure for the fake sensor honeypot and MITM\relax }}{21}{figure.caption.21}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Examle scenario of honypot against ramsonware attacks.\relax }}{24}{figure.caption.24}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces IoT network scheme with IPS.\relax }}{26}{figure.caption.25}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces IoT network scheme with IDS.\relax }}{27}{figure.caption.26}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces IOT network scheme level 2 with IPS\relax }}{27}{figure.caption.27}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces An example of the climatOffice IoT cluster\relax }}{28}{figure.caption.28}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Our simple IoT cluster with an high-interaction honeypot\relax }}{30}{figure.caption.29}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Our simple IoT cluster with a low-interaction honeypot\relax }}{30}{figure.caption.30}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }

@@ -1,0 +1,31 @@
+\section{Eavesdropping Attack and Countermeasures}
+\subsection{Eavesdropping Attack}
+In eavesdrop attack the network is sniffed in order to retrieve information transmitted through the network itself; the process can be classified as passive or active depending on the existence of an interaction of the attacker on the network. Specifically, a passive attack is performed just analyzing packets of information on the eavesdropped network channel, while an active attack is performed requesting directly to the channel information the attacker wants to retrieve.\\
+To counteract eavesdropping phenomena on a network several possibilities are present, always keeping in mind that the desired objective is to maintain secrecy of transmitted information.
+
+\subsection{Encrypting the channel}
+The most straightforward method to secure a channel communication is to encrypt the transmitted data, in this way even if the channel is sniffed data are secured (assuming a safe key maintenance and management). This solution is great for networks/clusters of powerful computers or for application that require not sending too many data, otherwise the risk is to spent most of the time computing cryptographic algorithms instead of computing for the cluster purpose. Mitigations could be the design of specific hardware to accelerate those computations; this implies that the applicability of this solution is impossible for most of the cheap low-cost low-power IoT-cluster applications.
+
+\subsection{Physical Countermeasures}
+\subsubsection{Intelligent Reflecting Surface}
+A solution in proposed in the article \textit{"Eavesdropping with Intelligent Reflective Surfaces: Threats and Defense Strategies"}\cite{https://doi.org/10.48550/arxiv.2108.00149} will enhance the point-to-point communication between the sender and the receiver making it impossible for the attacker to read the channel. This result is obtained exploiting properties of reflecting surfaces able to dynamically re-adapt and focus the connection to one specific point. Specifically, the channel for the attacker is worsen to a level of binary gibberish securing the information in the meanwhile.
+\subsubsection{Channel Capacity and Information Freshness}
+Other techniques are related to evaluating the capacity of the two receiving nodes (the actual receiver and the eavesdropper), CD and CE, and trying to set a network transmission protocol to make the eavesdropper unable to receive the data up to a given secrecy level RS as perfectly desctibed in the paper \textit{"Relay Selection for Wireless Communications Against Eavesdropping: A Security-Reliability Tradeoff Perspective"} \cite{Zou_2016}\\
+For systems in which the useful information is related to the freshness of the obtained data and the only secrecy that matters is the one aimed in protecting the newest data (we can imagine systems analyzing the position of cars on the road) other metrics have been developed ("secrecy age" and "secrecy age outage") as the article \textit{"Secure Status Updates under Eavesdropping: Age of Information-based Physical Layer Security Metrics"}\cite{https://doi.org/10.48550/arxiv.2002.07340}.
+
+\subsection{Impulsive Statistical Fingerprinting}
+This method is trying to move in the direction of cryptographic methods, without the usage of standard cryptographic algorithms, The point of this technique is to remove information that make the data understandable before transmitting it. The method relies on the exchange of fingerprints (e.g. time-stamps) between the source node and the destination node. These fingerprints are then used to compute statistics using some algorithms (final results will be mean, std deviation, other order momentum, and so on..) and to manipulate data before transmitting those by manipulations like removing the mean, whiten the data by dividing it by the std-deviation, etc. This method is suitable for the usage on low-performance IoT-clusters; on the other hand it is not mathematically secure: the method relies on the fact that an attacker will not be able to get a sufficient number of fingerprints to then be able to retrieve information on the transmitted data.
+
+\subsection{Active Eavesdropping - ML approach}
+All of previous remedies are for passive eavesdropping. For active eavesdropping there is the necessity to treat requests through the channel. Common possibility is to reduce the permission of requests from class of nodes. Another approach is to exploit ML to perform anomaly-detection classifying series of actions as normal or anomaly. Algorithms suitable for IoT-class devices can be random trees (random forests in the case of parallel execution on all the IoT-cluster), or comparison based like K-nearest neighbors, or linear methods like logistic regression or Perceptron based approach; in the case of NN (Neural Network) this must be conceived specifically for the device it will be deployed considering HW resources and computation capabilities. In all these cases features can be collected from the normal network traffic in a protected environment and then used to in the training procedure.
+
+\subsection{Possible Honeypots}
+Honeypots can work together with the identification procedure provided by previous techniques; as an example an useful honeypot approach could be in jamming the channel once the attacker is identified. Or keeping an unprotected (less protected) channel the attacker will try to get access to first and that is sending fake, but coherent, data.
+
+\section{Password Attack and countermeasures}
+\subsection{List of counteracts and considerations}
+\begin{itemize}
+  \item Limit the number of attempts and track the requester;
+  \item Since an attacker will try first to use common passwords maybe related to personal accessible info, a possibility is to keep a blacklist of possible passwords created from those personal info (that we also know..) and block the attacker attempts immediately;
+  \item A honeypot approach could be, in the case of previous condition, to give access to a fake shell in order to evaluate requests from the attacker, while taking countermeasures.
+\end{itemize}

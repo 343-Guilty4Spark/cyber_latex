@@ -1,0 +1,55 @@
+\chapter{Background}
+\section{Honeypot}
+This chapter covers the study of honeypot taxonomy.\\
+A honeypot is an expedient that aims at attracting or tricking somebody or something.It  has to be vulnerable and a realistic environment at the same time, resulting in an appealing decoy for attacks.\\
+A honeypot could be built for a specific purpose, as well as for more generic ones, it could be implemented exploiting hardware and/or software and disposed in different position inside the network.
+For what concert IoT systems, a honeypot represents a vulnerable environment that has to be targeted by hackers and then collect data about attacks, study their features and the tools used by the attackers. \\
+Many criteria are available to distinguish honeypots, some of which are listed below. 
+
+\section{According to the level of interaction}
+ \textbf{Low-interaction honeypot:} Honeypots belonging to this category have limited interaction with external systems.\\
+ There is no operating system for attackers to interact with, they represent targets to attract or attackers to detect by using software that emulate features of a particular operating system and network services on a host operation system.\\
+ The main advantage of this type of honeypot is that it is very easy to deploy and maintain and it does not involve any complex architecture. \\
+ On the other hand, it shows some drawbacks: it will not respond accurately to exploits. This drawback lowers the capability of detecting attacks.\\
+ Low-interactive honeypots are a safe and easy way to gather info about the frequently occurring attacks and their source.
+Some examples of low-interaction honeypots are listed below:
+\begin{enumerate}
+    \item \href{https://github.com/huuck/ADBHoney}{ADBHoney};
+    \item \href{https://github.com/johnnykv/heralding}{Heralding};
+    \item \href{https://github.com/foospidy/HoneyPy}{Honeypy};
+    \item \href{https://github.com/SecureAuthCorp/HoneySAP}{HoneySAP};
+    \item \href{https://github.com/DinoTools/dionaea}{Dionaea}.
+\end{enumerate}
+\textbf{High-interaction honeypot}: this is the most advanced honeypot class.
+These honeypots offer a very high level of interaction with the intrusive system. They give more realistic experience to attackers and gather more information about intended attacks; this also involves very high risk to catch of whole honeypot.\\
+High-interaction honeypots are most complex and time consuming to design and manage. Also they are very useful when we want to capture details of vulnerabilities or exploits the ones that are not yet known.
+
+\textbf{Medium-interaction honeypot}: also known as mixed-interactive honeypots. \\
+Medium-interaction honeypots are slightly more sophisticated than low-interaction honeypots, but less sophisticated than high-interaction honeypots. They provide the attacker an operating system so that complex attacks can be attracted and analysed.
+
+\section{According to the purpose}
+\textbf{Production honeypot}:
+This honeypot typology is used as a defense instrument by an organization or on networks.\\ 
+It could be deployed within the production network of the organization where services are placed and exposed.\\
+These honeypots study and analyse attacks received and then help to strengthen the perimeter of the network. Such honeypots could also find and report some vulnerabilities of the environment used in the production network.  \\
+\textbf{Research honeypot}:
+Research honeypots are born with a purpose similar to production honeypots, but they have some different features.\\
+Their main purpose is the improvement of defensive and prevention tools, with slightly different strategies with respect to the production honeypots: the latter ones are more generic.\\
+Research honeypots usually look for new types of malware and, moreover, these honeypots are the most used ones when redacting articles and papers for the cybersecurity community, in order to provide the best knowledge.\\
+Research honeypots don't always simulate the environment of an organization network, they search for attacks faded to common infrastructure or solutions.\\
+This type of honeypot could be classified in more categories: the \textbf{anti-spam honeypot}, that studies the strategies adopted by spammers, the \textbf{malware honeypot}, that is more focused on the analysis of malicious software. In general, they are focused  on strategies and techniques adopted by hackers for some specific types of attacks, on the vulnerabilities that these can exploit and on the malicious files that can be diffused.\\
+All the information that can be collected about these attacks assume a fundamental role and need to be saved in ad-hoc infrastructure. A detailed analysis of this data could allow a prevention from future attacks. For example, anti-virus industries use this kind of honeypot to update their database of attacks with the newly discovered malware.\\
+Research honeypot have a more complex architecture. They are usually put outside from the organization network to avoid propagation of possible attacks and to gather all possible information since they are more exposed to attacks. The kinds of services that are exposed by these honeypot types require an accurate selection, the same for tools used and data stored.
+\section{According to the location}
+The honeypot could be placed: \\
+\textbf{Outside the network}, before the firewall, in this case the contact with the production network of the organization is null. This approach is used in research honeypots. \\
+\textbf{Inside the network}: it emulates the real environments of the production network, and monitor possible attacks that act on the latter. \\
+Here the visibility on attacks is complete, but a risk that the production network is attacked through the honeypot itself needs to be taken into account. \\
+\textbf{Inside the demilitarized zone} : DMZ is a network logically divided from the organization network. It has the purpose of offering some services to the public network. This solution is a compromise between the first and the second one. 
+
+\section{According to the implementation}
+\textbf{Physical honeypot}: a real system with hardware and software connected through an IP address to the network;\\
+\textbf{Virtual honeypot}: a software honeypot that simulates a configuration on an hardware.\\\\
+
+%DELETE THIS PART
+In the background chapter you should provide all the information required to acquire a sufficient knowledge to understand other chapters of the report. Suppose the reader is not familiar with the topic; so, for instance, if your project was focused on implementing a VPN, explain what it is and how it works. This chapter is supposed to work kind of like a "State of the Art" chapter of a thesis.\\ Organize the chapter in multiple sections and subsections depending on how much background information you want to include. It does not make any sense to mix background information about several topics, so you can split the topics in multple sections.\\Assume that the reader does not know anything about the topics and the tecnologies, so include in this chapter all the relevant information. Despite this, we are not asking you to write 20 pages in this chapter. Half a page, a page, or 2 pages (if you have a lot of information) for each `topic`(i.e. FreeRTOS, the SEcube, VPNs, Cryptomator, PUFs, Threat Monitoring....thinking about some of the projects...).
