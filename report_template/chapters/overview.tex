@@ -1,10 +1,12 @@
 \chapter{Implementation Overview}
 
-
+In this chapter we give a summary of the two very different solutions, thanks to the research done we realized that there are different types of clusters for IoT systems, so we decided to create two completely different solutions from each other, in order to be able to range across multiple IoT systems.
 
 \section{Case of study 1: Cluster and Honeypot for a Ransomware attack}
 
+Most IoT solutions include devices that collect data from the environment and send it to more powerful components that gather such information, possibly perform computation and forward data elsewhere.\\
 Let's suppose to have a distibuted system as in the following picture.
+
 
 \begin{figure}[h!]
   \centering
@@ -14,8 +16,7 @@ Let's suppose to have a distibuted system as in the following picture.
 \end{figure}
 \FloatBarrier
 
-\noindent Most IoT solutions include devices that collect data from the environment and send it to more powerful components that gather such information, possibly perform computation and forward data elsewhere.\\
-Any Raspberry Pi in the picture represents a server, each connected to more clients (not shown in the picture). Such servers are then connected among each other through a network and a communication protocol.\\
+\noindent Any Raspberry Pi in the picture represents a server, each connected to more clients (not shown in the picture). Such servers are then connected among each other through a network and a communication protocol.\\
 In this example, the architecture of the network is a full mesh, implying that each server is directly connected to any other. You could think of this network as either a local area network (LAN) or wide area network (WAN). They offer two different flavors of the same problem since in LANs you assume that all devices belonging to the network own a different local IP address and you should deal with the NAT system, while in a WAN servers have different public IP addresses and you should deal with DNS in order to communicate with each node in the network. \\ 
 Here, the traffic entering the network can be either legitimate or a ransomware attack, benign or malign respectively.\\
 As to the communication protocol, IoT systems mainly rely on REST or MQTT. In this context we could think of servers as MQTT subscriber \& publisher (at the same time), since each server is supposed both to receive and send data. The MQTT broker is the entity through which any data packet has to pass to be forwarded from the publisher to the subscriber.\\
@@ -41,14 +42,30 @@ The proof of concept can be constructed thanks to a simulated ransomware attack.
 
 \section{Case of study 2: Cluster and Honeypot for a DoS attack}
 
-In the paper named \textit{Use of Honeypots for Mitigating DoS Attacks 
-targeted on IoT Networks}\cite{7944057} we found an analysis of the usage of a honeypot to reduce the damage of a DOS attack. One of the several possible attacks on IoT 
+For this solution we took a cue from the paper \textit{Use of Honeypots for Mitigating DoS Attacks 
+targeted on IoT Networks}\cite{7944057} where we found an analysis of the usage of a honeypot to reduce the damage of a DOS attack. One of the several possible attacks on IoT 
 systems, Denial of Service (DoS) attack has been a nightmare for 
 communication networks over the years and they 
 pose a major security threat to IoT systems as well.\\
+So our goal in this part of the project is to structure a tree cluster and elaborate an honeypot to protect it from a DOS attack, maybe creating some context.
+  
+\subsection{DOSPOTPY and climatOffice}
+In the last years it becomes more and more important to avoid waste of energy at home and at work, due to the increasing cost of energy and to the environmental impact from the chain of the energy supply. So a startup develop a new IoT system named climatOffice(This is only an imaginary company, it doesn't exist in the real life). This solution aims at control the temperature in every office of the company, using N temperature sensors in every room an at least one air conditioner. The desired temperature could be set by an external terminal to the server that control every room. If there are windows in the room, the system also offer the possibility to control the illumination using automatics roll-up shutter. The last feature of this IoT cluster is to possibly control the accesses to some vulnerable rooms, like the server's farm room. So it can lock or unlock some doors. It can do this last thing automatically or by a command from a terminal. A possible Dos attack could for example avoid the door to close or open, or shut down the air conditioner system. To avoid so we could implement our systemr like in the figures below.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width = 10cm]{images/IOTlever2IPS.png}
+  \caption{An example of the climatOffice IoT cluster}
+  \label{fig:TCPDos}
+\end{figure}
+\FloatBarrier
+\noindent
+The cluster consists of a main server to which the various edge servers are connected so a client  from the outside will turn out to be the leaf of this tree that can also evolve in multiple layers, in this case we preferred to remain fairly simple. The dispatcher, once the client sends a packet, redirects it to the server it is interacting with, every time a new connection arrives the dispatcher evaluates it as "harmful" then sends all the packets to the honeypot which, while the dispatcher continues the his job, checks that this client is credible and redirects the response to the dispatcher so that he is free to create a new connection with one of the servers. When a client is malicious (it sends too many packets, or with an unconfirmed structure) the honeypot writes the IP to a blacklist and then the dispatcher silences the connection, so the DOS attacker will seem to be sending data but actually can't slow down the system.
+ For example, our attacker implement a bot that connect to the system and create thousands of fake temperature sensor that send random and wrong data to the server. Our dispatcher usually send new traffic connection to the honeypot, that will analyse the data . If this is no sense data, the honeypot will store in a log file(black list) the IP addresses of the fake sensor and will told to the dispatcher  to avoid accept new packets from that IP.
+In a more simple way of cluste rwe can think of having much fewer packets and therefore of having less traffic in the dispatcher, if so we can then merge the dispatcher and the honeypot so that the check is faster without fill the dispatcher too much.
 
-\subsection{Structure of the IoT cluster for the project}
-In order to create the honeypot and check if it works, we would need to create the IoT "cluster" and the DoS client. It is a good idea to start with the most possible structure, and if we manage to create it without any particular difficulty, we could make it more realistic and more complex. So our simple IoT cluster could have very different implementations. We had many ideas, the first of which is reported in the figure below.\\
+\subsection{The dispatcher evolution: IPS issue}
+
+In order to build our cluster we have starting from the structures gives by the paper that is shown below:\\
 
 \begin{figure}[h!]
   \centering
@@ -57,9 +74,8 @@ In order to create the honeypot and check if it works, we would need to create t
   \label{fig:2period}
 \end{figure}
 \FloatBarrier
-
-An Intrusion Prevention System (IPS) is an active protection system. It attempts to identify potential threats based upon monitoring features of a protected host or network and can use signature, anomaly, or hybrid detection methods. Unlike an Intrusion Detection System, an IPS takes action to block or remediate an identified threat. While an IPS may raise an alert, it also helps to prevent the intrusion from occurring. An IDS is a passive monitoring solution for detecting cybersecurity threats to an organization. If a potential intrusion is detected, the IDS generates an alert that notifies security personnel to investigate the incident and take remedies against the action. \\
-In our first proposal the system is less complex, because the IPS itself takes the decision on where to redirect the traffic to. If it is a malicious one, to the honeypot that will collect data about it, if it is a normal one, to the server. The IPS needs time to take decisions, so the traffic could be slowed down by it. If the application doesn't require high availability, this solution is acceptable.
+In this first draft, which was then elaborated to arrive at the solution used in the implementation, we pay particular attention to the  Intrusion Prevention System (IPS) that is an active protection system. It attempts to identify potential threats based upon monitoring features of a protected host or network and can use signature, anomaly, or hybrid detection methods. Unlike an Intrusion Detection System, an IPS takes action to block or remediate an identified threat. While an IPS may raise an alert, it also helps to prevent the intrusion from occurring. An IDS is a passive monitoring solution for detecting cybersecurity threats to an organization. If a potential intrusion is detected, the IDS generates an alert that notifies security personnel to investigate the incident and take remedies against the action. \\
+In our very first proposal the system is less complex, because the IPS itself takes the decision on where to redirect the traffic to. If it is a malicious packet, to the honeypot that will collect data about it, if it is a normal one, to the server. The IPS needs time to take decisions, so the traffic could be slowed down by it. If the application doesn't require high availability, this solution is acceptable.
 Our second idea is reported in figure below.
 
 \begin{figure}[h!]
@@ -70,27 +86,17 @@ Our second idea is reported in figure below.
 \end{figure}
 \FloatBarrier
 
-This time an ad-hoc server has an IDS, that arises an alarm when something wrong is happening. Then an algorithm inside the server takes a decision on what to do with this possible malicious connection, and sends a command to the RSA server to redirect the traffic. In this way, the system has an high availability because the RSA server is not slow down by the IDS, that acts in a totally autonomous way. However, this idea requires more engineering effort and hardware. If the implementation of these two systems takes less time than expected, we could try to create a more realistic IoT cluster like in the figure below.
+This time an ad-hoc server has an IDS, that arises an alarm when something wrong is happening. Then an algorithm inside the server takes a decision on what to do with this possible malicious connection, and sends a command to the RSA server to redirect the traffic. In this way, the system has an high availability because the RSA server is not slow down by the IDS, that acts in a totally autonomous way. However, this idea requires more engineering effort and hardware so we redirect the solution to a more simple IPS to create a more realistic IoT cluster like in the figure below. 
 \begin{figure}[h!]
   \centering
   \includegraphics[width = 15cm]{images/IOTlevel2IPS.drawio.png}
-  \caption{IOT network scheme level 2 with IPS}
+  \caption{IOT network scheme level 2 with dispatcher}
   \label{fig:3period}
 \end{figure}
 \FloatBarrier
-\noindent If we didn't manage to to that, we could see this last idea as a possible future implementation.
+ In this solution all the traffic generated by the clients is redirected to the various servers that the IPS serves, when an attack occurs It knows it by checking if it is a new IP or if the structure of the packets is wrong and redirect the traffic to the honeypot. 
+In a second look we noticed that ips was simple and much more like a dispatcher redirecting packets.
 
-\subsection{DOSPOTPY and climatOffice}
-In the last years it becomes more and more important to avoid waste of energy at home and at work, due to the increasing cost of energy and to the environmental impact from the chain of the energy supply. So a startup develop a new IoT system named climatOffice(This is only an imaginary company, it doesn't exist in the real life). This solution aims at control the temperature in every office of the company, using N temperature sensors in every room an at least one air conditioner. The desired temperature could be set by an external terminal to the server that control every room. If there are windows in the room, the system also offer the possibility to control the illumination using automatics roll-up shutter. The last feature of this IoT cluster is to possibly control the accesses to some vulnerable rooms, like the server's farm room. So it can lock or unlock some doors. It can do this last thing automatically or by a command from a terminal. A possible structure of this system is reported in the picture below.
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width = 10cm]{images/climatOffice.drawio.png}
-  \caption{An example of the climatOffice IoT cluster}
-  \label{fig:TCPDos}
-\end{figure}
-\FloatBarrier
-\noindent
-A possible Dos attack could for example avoid the door to close or open, or shut down the air conditioner system. To avoid so we could implement our honeypot and IPS like in the precedent figures. For example, our attacker implement a bot that connect to the system and create thousands of fake temperature sensor that send random and wrong data to the server. Our IPS usually send new traffic connection to the honeypot, that will analyse the data . If this is no sense data, the honeypot will store in a log file the IP addresses of the fake sensor and will told to the IPS to close the connections and to avoid accept new one from that IP.
 
 
 
@@ -98,3 +104,8 @@ A possible Dos attack could for example avoid the door to close or open, or shut
 
 %DELETE THIS AT THE END
 In this chapter you should provide a general overview of the project, explaining what you have implemented staying at a high-level of abstraction, without going too much into the details. Leave details for the implementation chapter. This chapter can be organized in sections, such as goal of the project, issues to be solved, solution overview, etc.\\It is very important to add images, schemes, graphs to explain the original problem and your solution. Pictures are extremely useful to understand complex ideas that might need an entire page to be explained.\\Use multiple sections to explain the starting point of your project, the last section is going to be the high-level view of your solution...so take the reader in a short `journey` to showcase your work.
+
+
+
+
+
