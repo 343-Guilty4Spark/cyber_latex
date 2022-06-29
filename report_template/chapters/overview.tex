@@ -4,6 +4,16 @@ In this chapter we give a summary of the two very different solutions, thanks to
 
 \section{Case of study 1: Cluster and Honeypot for a Ransomware attack}
 
+\subsection{Goal of the project}
+
+
+
+\subsection{Problem}
+
+
+
+\subsection{Solution Overview}
+
 Most IoT solutions include devices that collect data from the environment and send it to more powerful components that gather such information, possibly perform computation and forward data elsewhere.\\
 Let's suppose to have a distibuted system as in the following picture.
 
@@ -11,33 +21,65 @@ Let's suppose to have a distibuted system as in the following picture.
 \begin{figure}[h!]
   \centering
   \includegraphics[width = 16cm]{images/ramsonwareHoneypot.png}
-  \caption{ Examle scenario of honypot against ramsonware attacks.}
+  \caption{ Example scenario of honypot against ramsonware attacks.}
   \label{fig:irradiances}
 \end{figure}
 \FloatBarrier
 
-\noindent Any Raspberry Pi in the picture represents a server, each connected to more clients (not shown in the picture). Such servers are then connected among each other through a network and a communication protocol.\\
-In this example, the architecture of the network is a full mesh, implying that each server is directly connected to any other. You could think of this network as either a local area network (LAN) or wide area network (WAN). They offer two different flavors of the same problem since in LANs you assume that all devices belonging to the network own a different local IP address and you should deal with the NAT system, while in a WAN servers have different public IP addresses and you should deal with DNS in order to communicate with each node in the network. \\ 
-Here, the traffic entering the network can be either legitimate or a ransomware attack, benign or malign respectively.\\
-As to the communication protocol, IoT systems mainly rely on REST or MQTT. In this context we could think of servers as MQTT subscriber \& publisher (at the same time), since each server is supposed both to receive and send data. The MQTT broker is the entity through which any data packet has to pass to be forwarded from the publisher to the subscriber.\\
-Even though the underlying hardware is the same for each of the servers, one of them plays a different role: it behaves as a malware honeypot.\\
-All raspberry devices store two distinct types of files: production value files and sentinel files.
-Sentinel files are spread in the network with the sole purpose of being a bait for ransomware. Such files are useless for production, thus no any trusted node in the network should change their content. Any change should be assumed as malicious.\\
-The task of the honeypot is to monitor the hash digest of sentinel files. If it changed, then there is a very high chance of being under ransomware attack (since sentinel files do not provide production value and therefore are useless for any legitimate operation).\\
-A rudimentary script that analyses differences on sentinel files could be the following:\\
-%\begin{tabbing}
-%\footnotesize\texttt{if ((Get-FileHash "./baitFile.txt").hash -ne (Get-FileHash "./baitFile.txt").hash)\\ {\> stop-service "serviceName" -force} }\\\\
-%\texttt{if ((\=Get-FileHash "./baitFile.txt").hash -ne (Get-FileHash "./baitFile.txt").hash)
-%\> stop-service "serviceName" -force}
-%\end{tabbing}
-Heuristics are available since studies show that ransomware tend to encrypt files starting in alphabetical order (or inverse alphabetical order), thus you can name the sentinel files accordingly. As an example, placing files called "\#\#\#aBaitFile.txt" would be among the first ones to be encrypted with an alphabetical attack.\\
-The computation of hash digests with respect to checking the whole content is a clear advantage regarding speed.\\
-If a difference in the hash digest is present, then a response takes place. The most straightforward response is the shutdown of communication in the whole network and the insertion of the attacker's IP in a blacklist, denying its upcoming traffic.\\
-%While some studies raised doubts about the efficiency of such a simple honeypot, it is worth reminding that it comes at zero cost and therefore is a valuable option because the placement of a honeypot is an improvement on no monitoring at all, as every study agrees.\\
-%As to the ransomware, we could either think of using a real one exposing the system to a real threat or deploy some simulated, ad-hoc malware. Some material is available online regarding the creation of simple ransomware via PowerShell, as reported in link {[19]} of the Appendix.
-An improvement with respect to the scenario depicted above could be the deployment of multiple honeypots at the same time, allowing more servers to monitor sentinel files.\\
-The proof of concept can be constructed thanks to a simulated ransomware attack. Some material is available online regarding the creation of simple ransomware via PowerShell, as reported in "How to: Simulating A Ransomware Attack With PowerShell" \cite{Howto}.
+\subsubsection{Cluster}
 
+\noindent Any Raspberry Pi in the picture represents a server, each connected to more clients (e.g., sensor nodes, not shown in the picture). Such servers are then connected among each other through a network and a communication protocol.\\
+In this example, the architecture of the network is a full mesh, implying that each server is directly connected to any other. You could think of this network as either a local area network (LAN) or wide area network (WAN). They offer two different flavors of the same problem since in LANs you assume that all devices belonging to the network own a different local IP address and you should deal with the NAT system, while in a WAN servers have different public IP addresses and you should deal with DNS in order to communicate with each node in the network. \\ 
+Raspberry devices exchange messages via MQTT, a lightweight publish/subscribe protocol. \\
+Each device can manage messages of two kinds:
+
+%\begin{itemsize}
+%	\item Dispatched commands. They should arrive from the dispatcher in the network (not shown here). The ransomware will pretend to be the dispatcher to let a victim device execute malicious encryption;
+%	\item Attack notifications. If under attack, a device broadcasts a message stating that is the victim of an attack in progress.
+%\end{itemsize}
+% DA REINSERIRE
+
+\subsubsection{Defensive Mechanism}
+
+\noindent Each raspberry stores both files that are needed for the various operations it has to perform (e.g., files storing data from sensors) and files that are useless to the purpose of the cluster. The latter ones are better known as "sentinel files". Nobody should ever interact with sentinel files since they are useless for benign purposes, thus every modification to them must be considered as malicious.\\
+Each raspberry runs a periodic check on the status of its own sentinel files, by checking their hash digest. If a mismatch takes place, then an attack notification is broadcasted and the node performs a shutdown, both avoiding to encrypt all its file system and avoiding to infect other nodes in the cluster. This operation is crucial, it grantes that the ransomware cannot spread out of the victim's file system. \\
+The infected raspberry is inserted in a blacklist by all other nodes in the cluster, its messages are not read anymore because they are considered malicious. The node is deleted from the blacklist after a fixed amount of time. During this interval, a technician is supposed to perform a reset of the infected device.\\
+
+\subsubsection{Ransomware}
+
+\noindent Most real ransomware would have been too strong and many of them could have put our systems in danger. We chose to build our own ransomware that claims to be the dispatcher and sends messages (containing bash commands) to a victim in the cluster. \\
+Ransomware aim at encrypting the victim's file system thanks to asymmetryc encryption. They try to encrypt the victim's file system with their own public key, obliging the victim to restore data by applying decryption with the ransomware's private key, that is secret until a payment is received.
+Our ransomware performs the following steps:
+%\begin{enumerate}
+%	\item Creation of a pair of asymmetric keys;
+%	\item Injection of the public key in the victim's file system;
+%	\item Encryption, directory by directory, of each file in the victim's file system using the public key.
+%\end{enumerate}
+% DA REINSERIRE
+
+
+%\noindent Any Raspberry Pi in the picture represents a server, each connected to more clients (not shown in the picture). Such servers are then connected among each other through a network and a communication protocol.\\
+%In this example, the architecture of the network is a full mesh, implying that each server is directly connected to any other. You could think of this network as either a local area network (LAN) or wide area network (WAN). They offer two different flavors of the same problem since in LANs you assume that all devices belonging to the network own a different local IP address and you should deal with the NAT system, while in a WAN servers have different public IP addresses and you should deal with DNS in order to communicate with each node in the network. \\ 
+%Here, the traffic entering the network can be either legitimate or a ransomware attack, benign or malign respectively.\\
+%As to the communication protocol, IoT systems mainly rely on REST or MQTT. In this context we could think of servers as MQTT subscriber \& publisher (at the same time), since each server is supposed both to receive and send data. The MQTT broker is the entity through which any data packet has to pass to be forwarded from the publisher to the subscriber.\\
+%Even though the underlying hardware is the same for each of the servers, one of them plays a different role: it behaves as a malware honeypot.\\
+%All raspberry devices store two distinct types of files: production value files and sentinel files.
+%Sentinel files are spread in the network with the sole purpose of being a bait for ransomware. Such files are useless for production, thus no any trusted node in the network should change their content. Any change should be assumed as malicious.\\
+%The task of the honeypot is to monitor the hash digest of sentinel files. If it changed, then there is a very high chance of being under ransomware attack (since sentinel files do not provide production value and therefore are useless for any legitimate operation).\\
+%A rudimentary script that analyses differences on sentinel files could be the following:\\
+%%\begin{tabbing}
+%%\footnotesize\texttt{if ((Get-FileHash "./baitFile.txt").hash -ne (Get-FileHash "./baitFile.txt").hash)\\ {\> stop-service "serviceName" -force} }\\\\
+%%\texttt{if ((\=Get-FileHash "./baitFile.txt").hash -ne (Get-FileHash "./baitFile.txt").hash)
+%%\> stop-service "serviceName" -force}
+%%\end{tabbing}
+%Heuristics are available since studies show that ransomware tend to encrypt files starting in alphabetical order (or inverse alphabetical order), thus you can name the sentinel files accordingly. As an example, placing files called "\#\#\#aBaitFile.txt" would be among the first ones to be encrypted with an alphabetical attack.\\
+%The computation of hash digests with respect to checking the whole content is a clear advantage regarding speed.\\
+%If a difference in the hash digest is present, then a response takes place. The most straightforward response is the shutdown of communication in the whole network and the insertion of the attacker's IP in a blacklist, denying its upcoming traffic.\\
+%%While some studies raised doubts about the efficiency of such a simple honeypot, it is worth reminding that it comes at zero cost and therefore is a valuable option because the placement of a honeypot is an improvement on no monitoring at all, as every study agrees.\\
+%%As to the ransomware, we could either think of using a real one exposing the system to a real threat or deploy some simulated, ad-hoc malware. Some material is available online regarding the creation of simple ransomware via PowerShell, as reported in link {[19]} of the Appendix.
+%An improvement with respect to the scenario depicted above could be the deployment of multiple honeypots at the same time, allowing more servers to monitor sentinel files.\\
+%The proof of concept can be constructed thanks to a simulated ransomware attack. Some material is available online regarding the creation of simple ransomware via PowerShell, as reported in "How to: Simulating A Ransomware Attack With PowerShell" \cite{Howto}.
+% QUESTO NO
 
 
 \section{Case of study 2: Cluster and Honeypot for a DoS attack}
