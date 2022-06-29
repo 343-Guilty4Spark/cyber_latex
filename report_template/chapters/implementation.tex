@@ -15,11 +15,11 @@ In our first simulation we decided to implement an high-interaction honeypot and
 \end{figure}
 \FloatBarrier
 \noindent
-
+We have different type of client (just like in the reality of an heterogeneous IoT cluster).
 In the nexts subsections we will explain the purpose of every script and how they interact. We would like to remind that on the git repository there is also a tutorial about the use of the first version of the cluster.
 \subsection{Door.py}
 This script represent a door that could be controlled by our system. It have a global variable named status , that could assume 2 values, UNLOCK and LOCK.
-This are the status of the door. We the "sensor" is turned on,  it send 2 packets to the server with the initial status of the door, then it wait for commands from the server.  The packets send by the door sensor have this format: "topic: DOOR data: LOCK/UNLOCK IPFALSE: 129.0.0.1". The IPFALSE filed was an attempt
+This are the status of the door. When the "sensor" is turned on,  it send 2 packets to the server with the initial status of the door, then it wait for commands from the server.  The packets send by the door sensor have this format: "topic: DOOR data: LOCK/UNLOCK IPFALSE: 129.0.0.1". The IPFALSE filed was an attempt
 to mask the loopbacks IP with external IP, but then we understand that this was not necessary. A socket can be distinguished by another by the couple (IP,port) 
 of the client and the server. When the scripts from this implementation will be launch from different network, the system will behave in the same way of  our tests on loopback. We decided to leave this field because if in the future we need to exchange more data, we could recycle it, of course changhing the name.
 The data that the door could receive from the server have this format: "topic: SERVER data: STATUS/LOCK/UNLOCK IPFALSE: someData". When the server 
@@ -71,8 +71,7 @@ After the presentation of our projects it was notice to our group that the honey
 \FloatBarrier
 \noindent
 
-\subsection{ Future work}
-There are many way to improve our simulation before deploy it on a real hardware implementation. First we need to model more sensor, like the ones reported in the climatOffice reppresentation. Thane we need to encript and decript the data in the socket, otherwise the attacher could understand the ID of the sensors and invalidate the honeypot. Then we have to create a server that work on multiple thread and that is able to speak with other servers. 
+
 
 
 
