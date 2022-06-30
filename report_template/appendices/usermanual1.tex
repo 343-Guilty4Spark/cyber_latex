@@ -1,13 +1,23 @@
 \chapter{User Manual for DOS Honeypot}
 \label{usermanual}
 In this user manual we will see how to setup the cluster, some of its features to control and check its status and how to inject a DOS attack inside of it.
-\section{How to start the cluster}
+\section{How to start the cluster., version High Level}
 After downloading and unzipping the folder from GIT in order to run the simulation in the correct way we need to open at least four shell and follow this step:
 \begin{enumerate}
 \item  In the first shell launch the honeypot  with the command below, the 2 argument are the Ip and the port number. They are just an example , but it must be the same of the values saved in dispacher.py in the global variable HOST\_H and PORT\_H  so if is necessary to change it, they must be changed inside the code. \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python honeypot.py 127.0.0.2 65430\end{verbatim}. 
 \item In the second start the server with the command below with the argument equal to the value HOST\_S and PORT\_S in the dispacher.py even here if we want to change it is necessary to change it in the code.  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python multiServer2.py 127.0.0.3 65429\end{verbatim}.
 \item In the third launch the dispacher with the command  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python dispacher.py 127.0.0.1 65430\end{verbatim}. 
 \item In the others shell finally start all the sensors, in order to connect them to the dispacher, the global variable in all the sensors and Dos Attack HOST and PORT must be the same of the argument given to the dispacher  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python <nameofthesensor>.py\end{verbatim}
+It is possible to check if the honeypot and dispatcher works correctly, it must be in the shell honeypot and dispatcher the ip and port of the client and the status (in this case TRUSTED).\\
+Another possible check that is possible to do is to run (as the client) terminal.py and with the command \begin{verbatim}\$ LISTD\end{verbatim} check if the number of the client that is active coincides.
+\end{enumerate}
+\section{How to start the cluster., version Low Level}
+After downloading and unzipping the folder from GIT in order to run the simulation in the correct way we need to open at least four shell and follow this step:
+\begin{enumerate}
+\item First we start the server with the command below with the argument equal to the value HOST\_S and PORT\_S in the dispacherAndPot.py even here if we want to change 
+it is necessary to change it in the code.  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python multiServer2.py 127.0.0.3 65429\end{verbatim}.
+\item In the third launch the dispacher with the honeypot with the command  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python dispacherAndPot.py 127.0.0.1 65430\end{verbatim}. 
+\item In the others shell finally start all the sensors, in order to connect them to the dispacher, the global variable in all the sensors and Dos Attack HOST and PORT must be the same of the argument given to the dispacherAndPot  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python <nameofthesensor>.py\end{verbatim}
 It is possible to check if the honeypot and dispatcher works correctly, it must be in the shell honeypot and dispatcher the ip and port of the client and the status (in this case TRUSTED).\\
 Another possible check that is possible to do is to run (as the client) terminal.py and with the command \begin{verbatim}\$ LISTD\end{verbatim} check if the number of the client that is active coincides.
 \end{enumerate}
@@ -28,5 +38,5 @@ After a coomand is sent to the server, our terminal start waiting for the respon
 \end{itemize}
 \section{Inject the DOS attack}
 After the first phase of build of the cluster with all the client it is possible to attack the system with the script DosAttack.sh \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ ./DosAttack.sh\end{verbatim}
-It is possible to check what the script doing just looking on the dispatcher terminal looking how the cluster manage the attack.
+It is possible to check what the script doing just looking on the dispatcher terminal looking how the cluster manage the attack. To checge the value of Dos shell that attack the system just modify  DosAttack.sh . 
 

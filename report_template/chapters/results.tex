@@ -1,4 +1,15 @@
 \chapter{Results}
+\section{Results about case of study 2: Cluster and Honeypot for a DoS attack}
+
+\subsection{High level version}
+We run the DosAttack.sh with different number of scripts launched, 50,100,150,200 and 400. For this version, the cluster with the honeypot was able to handle up to 200 fake sensors. 
+Unfortunately with 400 Dos scripts the virtual machine where the system is simulated wasn't able to establish all the sockets, due to the high number of resources requested.
+
+\subsection{Low level version} 
+We run the DosAttack.sh with different number of scripts launched, 50,100,150,200 and 400. For this version, the cluster with the honeypot inside the dispatcher was able to handle
+ up to 400 fake sensors. 
+This version works better than the other because the dispatcher don't have to redirect the data from the Dos sensors to the honeypot, because it is instantiated inside it.
+
 In this chapter we expect you to list and explain all the results that you have achieved. Pictures can be useful to explain the results. Think about this chapter as something similar to the demo of the oral presentation. You can also include pictures about use-cases (you can also decide to add use cases to the high level overview chapter).
 \section{Known Issues}
 If there is any known issue, limitation, error, problem, etc...explain it in this section. Use a specific subsection for each known issue. Issues can be related to many things, including design issues.
