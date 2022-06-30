@@ -58,7 +58,7 @@ Integrity check of sentinel files is performed periodically on each raspberry in
 As previously mentioned, an adoption of a real ransomware got discarded. However, the ad-hoc ransomware shows all the significant operations that a real one would perform.\\
 Also, some enhanced attack features are taken into account. For instance, we supposed that once a ransomware is in the victim's system it might understand that some tripwire files are placed (since it is a well known technique) and therefore might perform some files reordering. Files reordering could arrange files in a way such that production files could be encountered first, compromising the defensive mechanism. Such an arrangement is not possible in our solution since a masking of some bash commands is performed, not allowing harmful commands such as "sort -r" that would order files in a random way, in a given directory. Command redirection is tackled in the next section of this chapter.\\
 In this cluster structure, the vulnerability that could be exploited by the ransomware is that there is no clear dispatching device to give commands. The ransomware could claim to be a node sending commands legitimately.\\
-The ransomware performs four main operations:
+The ransomware uses gpg command to operate maliciously on the victim's file system. The steps below are performed:
 
 \begin{enumerate}
   \item A pair of asymmetric RSA keys is generated on its own system;
