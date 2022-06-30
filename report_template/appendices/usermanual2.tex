@@ -1,3 +1,56 @@
 \chapter{User Manual for Malware Honeypot}
 \label{usermanual}
-In the user manual you should explain, step-by-step, how to reproduce the demo that you showed in the oral presentation or the results you mentioned in the previous chapters.\\ If it is necessary to install some toolchain that is already well described in the original documentation (i.e., Espressif's toolchain for ESP32 boards or the SEcube toolchain) just insert a reference to the original documentation (and remember to clearly specify which version of the original documentation must be used). There is no need to copy and paste step-by-step guides that are already well-written and available.\\The user manual must explain how to re-create what you did in the project, no matter if it is low-level code (i..e VHDL on SEcube's FPGA), high-level code (i.e., a GUI) or something more heterogeneous (i.e. a bunch of ESP32 or Raspberry Pi communicating among them and interacting with other devices).  
+In this User manual it is given a brief explanation of how to raise up the cluster and launch the attack. For this Project python is requested, if it is already installed skipp the following section.
+\section{How to Install python}
+For this project is requested a version of python up to 3.X.X. To install python and the used package in the environment of each Raspberry Pi follow this steps:
+\begin{enumerate}
+\item Install the required packages for python with this command  \begin{verbatim}\$ sudo apt install build-essential zlib1g-dev libncurses5-
+dev libgdbm-dev
+ libnss3-dev libssl-dev libreadline-dev libffi-dev wget\end{verbatim}
+\item Install python (in this case 3.8) \begin{verbatim}\$ sudo apt install python3.8\end{verbatim} 
+To check if the correct version of python is installed the following command can be inserted: \begin{verbatim}\$ python --version\end{verbatim}
+\item Install pip3 package with the command  \begin{verbatim}\$ sudo apt install python3-pip\end{verbatim} 
+\item Install the PAHO MQTT library with the command  \begin{verbatim}\$ pip3 install paho-mqtt\end{verbatim} 
+\end{enumerate}
+ \section{How to set the cluster environment}
+After connecting throw ssh with the raspberry Pi and cloning the repository on each Raspberry Pi follow this passage for each of them:
+\begin{enumerate}
+\item Enter in the folder "fs\_creato" with the command  \begin{verbatim}\$ cd DELIVERY/NODE_DELIVERY/fs_creato\end{verbatim} 
+\item Type the following two commands, the first is needed to specify the interpreter for the bash script while the other creates the file system \begin{verbatim} ~/DELIVERY/NODE_DELIVERY/fs_creato $ sed -i -e 's/\r$//' script2.sh  \end{verbatim}
+\begin{verbatim} ~/DELIVERY/NODE_DELIVERY/fs_creato $ chmod +777 ./script2.sh \end{verbatim}  
+At the end It has to be displayed in the terminal of the Raspberry Pi \begin{verbatim} pi<number_of_the_pi> created
+subscribed to PoliTo/C4ES/# \end{verbatim}  
+\end{enumerate}
+\section{How to lauch the malware attack}
+After cloning the repository in the device is used for this purpose follow this steps:
+\begin{enumerate}
+\item Enter in the folder "MALWARE\_DELIVERY" with the command  \begin{verbatim}\$ cd DELIVERY/MALWARE_DELIVERY\end{verbatim} 
+\item Type the following two commands again  the first is needed to specify the interpreter for the bash script while the other creates the malware  \begin{verbatim} ~/DELIVERY/MALWARE_DELIVERY $ sed -i -e 's/\r$//' script.sh \end{verbatim}
+\begin{verbatim} ~/DELIVERY/MALWARE_DELIVERY $ chmod +777 ./script.sh \end{verbatim}  
+At the end It has to be displayed in the terminal of the Raspberry Pi \begin{verbatim} MALWARE created
+subscribed to PoliTo/C4ES/# \end{verbatim}  
+
+And it starts to inject the public key into the File system after a while a message \begin{verbatim} operation completed successfully \end{verbatim}  has to be shown
+When the encryption starts from the malware a message is shown in the terminal of the Raspberry Pi attacked regarding a mismatch of the sentinel file, the procedure is shut down and the connection closed.
+\begin{verbatim} Start shutdown procedure RPI...
+blacklist cleared
+Connection to <IP> closed by remote host.
+Connection to <IP> closed. \end{verbatim}
+It can be also checked the insertion inside the blacklist in all the other Raspberry Pi just checking the terminal connected (via ssh) to the others Raspberry Pi.
+\end{enumerate}
+\section{Plus: How to check how many files have been encrypted}
+It is a feature provided to check the effective number of encrypted file.
+\begin{enumerate}
+\item Enter in the folder "NODE\_DELIVERY" with the command  \begin{verbatim}\$ cd DELIVERY/NODE_DELIVERY\end{verbatim} 
+\item Insert the command \begin{verbatim}\$  ~/DELIVERY/NODE_DELIVERY $ python3 ./count.py\end{verbatim} 
+to check how many files have been encrypted and which one.
+\end{enumerate}
+\section{Plus: How to visualize the log file}
+\begin{enumerate}
+\item Enter in the folder "fs\_creato" with the command  \begin{verbatim}\$ cd DELIVERY/NODE_DELIVERY/fs_creato\end{verbatim}
+\item Insert the command \begin{verbatim}\$  ~/DELIVERY/NODE_DELIVERY/fs_creato $ less log.txt\end{verbatim} 
+It is possible to see the name of the node that perform the encryption, the public key and the steps it performs.
+\end{enumerate}
+
+
+
