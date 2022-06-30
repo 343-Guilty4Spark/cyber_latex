@@ -1,0 +1,32 @@
+\chapter{User Manual for DOS Honeypot}
+\label{usermanual}
+In this user manual we will see how to setup the cluster, some of its features to control and check its status and how to inject a DOS attack inside of it.
+\section{How to start the cluster}
+After downloading and unzipping the folder from GIT in order to run the simulation in the correct way we need to open at least four shell and follow this step:
+\begin{enumerate}
+\item  In the first shell launch the honeypot  with the command below, the 2 argument are the Ip and the port number. They are just an example , but it must be the same of the values saved in dispacher.py in the global variable HOST\_H and PORT\_H  so if is necessary to change it, they must be changed inside the code. \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python honeypot.py 127.0.0.2 65430\end{verbatim}. 
+\item In the second start the server with the command below with the argument equal to the value HOST\_S and PORT\_S in the dispacher.py even here if we want to change it is necessary to change it in the code.  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python multiServer2.py 127.0.0.3 65429\end{verbatim}.
+\item In the third launch the dispacher with the command  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python dispacher.py 127.0.0.1 65430\end{verbatim}. 
+\item In the others shell finally start all the sensors, in order to connect them to the dispacher, the global variable in all the sensors and Dos Attack HOST and PORT must be the same of the argument given to the dispacher  \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python <nameofthesensor>.py\end{verbatim}
+It is possible to check if the honeypot and dispatcher works correctly, it must be in the shell honeypot and dispatcher the ip and port of the client and the status (in this case TRUSTED).\\
+Another possible check that is possible to do is to run (as the client) terminal.py and with the command \begin{verbatim}\$ LISTD\end{verbatim} check if the number of the client that is active coincides.
+\end{enumerate}
+\section{How to use the terminal}
+Here the list of the possible command  for the terminal and what they do:
+\begin{itemize}
+\item \textbf{LISTD}: it return the number of door connected to the system, it do not require other argument. In our system to refer a specific door we use a number to identify it. So if 2 doors are connected to the server, to act on the first door we digit 1, to act on the second we digit 2, to act on all trhe doors we digit ALL. The format for the packes from the terminal to the server for this command is :"topic: TERMINAL data: LISTD data2: bho IPFALSE: 130.0.0.1". The field data2 is used by the other commands
+\item \textbf{OPEND}: it allow the user to open a specific door connected to the system or open all the doors. For example, if we want to open only the door 2 we digit OPEND 2, if we want to open all the doors we digit OPEND ALL .  The format for the packes from the terminal to the server for this command is :"topic: TERMINAL data: OPEND data2: 1/2/ecc../ALL IPFALSE: 130.0.0.1".
+\item \textbf{CLOSED}: it allow the user to close a specific door connected to the sytem or close all the doors. For example, if we want to close only the door 2 we digit CLOSED 2, if we want to close all the doors we digit CLOSED ALL .  The format for the packes from the terminal to the server for this command is :"topic: TERMINAL data: CLOSED data2: 1/2/ecc../ALL IPFALSE: 130.0.0.1".
+\item \textbf{GETSTATUSD}: it allow the user to know the status of all the doors connected to the system. The format for the packes from the terminal to the server for this command is :"topic: TERMINAL data: GETSTATUSD data2: 1/2/ecc../ALL IPFALSE: 130.0.0.1". We could check the status of a specific door or of all the doors. 
+\end{itemize}
+After a coomand is sent to the server, our terminal start waiting for the response. The returned data depends from the command wrote to the server.
+\begin{itemize}
+\item \textbf{data for LISTD}: the data format returned by the server is : "topic: SERVER data: LISTD data2: 'NumberOfPortConnected' IPFALSE: 128.0.0.1" . Thew termianl print the number of door available.
+\item \textbf{OPEND}: the data format returned by the server is : "topic: SERVER data: OPEND data2: 'statusOfTheDoor' IPFALSE: 128.0.0.1" . The terminal then show the status of the door selected or off all the door selected
+\item \textbf{CLOSED}: the data format returned by the server is : "topic: SERVER data: CLOSED data2: 'statusOfTheDoor' IPFALSE: 128.0.0.1" . The terminal then show the status of the door selected or off all the door selected
+\item \textbf{GETSTATUSD}:  the data format returned by the server is : "topic: SERVER data: GETSTATUSD data2: IDDoor\_statusDoor IPFALSE: 128.0.0.1" . The terminal then show the status of the door selected or of all the door selected .
+\end{itemize}
+\section{Inject the DOS attack}
+After the first phase of build of the cluster with all the client it is possible to attack the system with the script DosAttack.sh \begin{verbatim}~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ ./DosAttack.sh\end{verbatim}
+It is possible to check what the script doing just looking on the dispatcher terminal looking how the cluster manage the attack.
+
