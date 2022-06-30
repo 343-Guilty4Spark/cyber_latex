@@ -107,30 +107,38 @@ For this implementation we started with an example of scripts for client and ser
 
 \subsubsection{Door.py}
 This script represent a door that could be controlled by our system. It have a global variable named status , that could assume 2 values, UNLOCK and LOCK.
-This are the status of the door. When the "sensor" is turned on,  it send 2 packets to the server with the initial status of the door, then it wait for commands from the server.  The packets send by the door sensor have this format: "topic: DOOR data: LOCK/UNLOCK IPFALSE: 129.0.0.1". The IPFALSE filed was an attempt
+This are the status of the door. When the "sensor" is turned on,  it send 2 packets to the server with the initial status of the door, then it wait for commands from the server.  The packets send by the door sensor have this format: \begin{verbatim}{topic: DOOR data: LOCK/UNLOCK IPFALSE: 129.0.0.1}\end{verbatim} \\ The IPFALSE filed was an attempt
 to mask the loopbacks IP with external IP, but then we understand that this was not necessary. A socket can be distinguished by another by the couple (IP,port) 
 of the client and the server. When the scripts from this implementation will be launch from different network, the system will behave in the same way of  our tests on loopback. We decided to leave this field because if in the future we need to exchange more data, we could recycle it, of course changhing the name.
-The data that the door could receive from the server have this format: "topic: SERVER data: STATUS/LOCK/UNLOCK IPFALSE: someData". When the server 
+The data that the door could receive from the server have this format: \begin{verbatim}{topic: SERVER data: STATUS/LOCK/UNLOCK IPFALSE: someData}\end{verbatim}. When the server 
 request the status, the door check the variable STATUS and sent it value to the server.  If the command is LOCK the STATUS variable is set to LOCK, if the command is UNLOCK the STATUS variable is set to UNLOCK.
 
 
 \subsubsection{Terminal.py}
-This script represent a terminal where the admin of the IoT cluster could control the sensors. The terminal offer a set of command , that are reported in the user manual.\\
-As it is implemented, if the termianl do not receive a response from the server, it stops working.  In future version we could add a timer, and after some time elapsed, we stop wainting from the response and rise an error.
+This script represent a terminal where the admin of the IoT cluster could control the sensors and check the status of the system. The terminal offer a set of command to visualize the number of client connected to the cluster, send command to control them and receave all the status of all the clients, a better description is reported in the user manual.\\
+The terminal at the begin for the system is a normal client so is always check by the Honeypot if it is trusted after that it can starts to send packets from the user.
+The packets sended from the terminal has the same structure described before, the user can decide the status (in this case for the door LOCK/UNLOCK.\\%il terminal risponde con qualcosa quando viene mandato il dato? se si scrivere come risponde
+As it is implemented, if the terminal do not receive a response from the server, it stops working.  In future version we could add a timer, and ,after some time elapsed, we stop wainting from the response and rise an error.
+
+
+
 
 \subsubsection{MultiServer2.py}
-The server have to handle all the connection of the sensors. It have to connect the terminal to the doors, and send the command from the terminal to the correct door. If the command is for all the doors connected, it send a packet with the command to all of them. It have a list of sockets of the doors and a list for the socket of the terminals. As it is implemented, our system work with only one terminal connected to the server, but this could be ealisy changed. The server have to nìbe reached only by the packtes from the dispacher. 
+The server have to handle all the connection of the sensors. It have to connect the terminal to the doors, and send the command to the correct door. If the command is for all the doors connected, it creates and sends  packets with the command to all of them. It has a list of sockets of the doors and a list for the socket of the terminals, when it needs to send a packet checks always that list to find the istance of the right socket, each socket comunicates with the dispatcher this because the server needs to be reached only by the packtes from the dispacher, there is no connection between the server and the client, so each time a new connection arrives  a new socket is created between the server and the dispatcher for that specific client.\\
+%serve a questo? la lista di client è usata anche per altro? 
+ As it is implemented, our system work with only one terminal connected to the server, but this could be ealisy changed. 
 
 
 \subsubsection{Dispacher.py}
-Created after multiserver and cluster in order to have in mind how packets should communicate and their structure, the dispacher is the first line of defense controlled by our honeypot. All the new connection from outside the network are sent to the dispacher. Here we have 3 list in python, one for the trusted socket named socketWhiteList, that could communicate with the server. Every socket in the white list have a personal socket from the dispacher to the server, the couple is saved in the list coppiaSocketWhiteListSocketServer. The list socketPending save all the new connection from outside that are waiting from the response of the honeypot. When a new connection arrive to the dispacher, the packet sent are redirect to the honeypot. The packet from the dispacher to the honeypot are sent in the same socket named socket\_honey. When a response from the honeypot arrive, if the connection is approved the dispacher move the socket from the list of the pending one to the list of the whitesocket. If the connection is not approved the sockert is delete from the list of the pending one and closed forever.  When a new connection arrive, the dispache sent to the honeypot first the peer name of the new connection, and then the first packet received from it. While a connection is pending, all the other packets from outside are lost, it's just an implementation choise.
+Created after multiserver and cluster in order to have in mind how packets should communicate and their structure, the dispacher is the first line of defense with our honeypot. All the new connection from outside the network are sent to the dispacher. Here we have 3 list in python, one for the trusted socket named socketWhiteList, that could communicate with the server. Every client in the white list have a personal socket from the dispacher to the server, the couple is saved in the list coppiaSocketWhiteListSocketServer. The list socketPending save all the new connection from outside that are waiting from the response of the honeypot. When a new connection arrive to the dispacher, the packet sent are redirect to the honeypot. The packet from the dispacher to the honeypot are sent in the same socket named socket\_honey. When a response from the honeypot arrive, if the connection is approved the dispacher move the socket from the list of the pending one to the list of the whitesocket. If the connection is not approved the sockert is delete from the list of the pending one and closed forever.  When a new connection arrive, the dispache sent to the honeypot first the peer name of the new connection, and then the first packet received from it. While a connection is pending, all the other packets from outside are lost, it's just an implementation choise.
 
 \subsubsection{DosAttack.py}
-The script for the Dos attack is very simple,  after establish a connection it start send random data using the socket. 
+The script for the Dos attack is very simple, it is called in a sequential way from DosAttack.sh.\\
+ After establish a connection with the dispatcher, through an infinite loop,  the script starts sending each second random data (in a wrong structure) using the socket created for data exchange. 
 
 
 \subsubsection{Honeypot.py}
-The honeypot is the last element implemented for the system. It control the packets from the new connection from the outside to the dispacher. If the came from a terminal or a door, the new connection is approved , otherwise is not approved. The format of the data from the honeypot to the dispacher is:"ip-port: (ip, port) status: TRUSTED/UNTRUSTED" . The honeypot receive ,from every connection to check, 2 data: the peer name that will be saved and then resent to the dispacher to specify what connection the honeypot is refeiring and the packet to analyze. 
+The honeypot is the last element implemented for the system. It controls the packets of the new connection sended by the dispacher. If they came from a terminal or a door (and so with a trusted structure) , the new connection is approved , otherwise is not approved. The format of the data from the honeypot to the dispacher is: \begin{verbatim}{"ip-port: (ip, port) status: TRUSTED/UNTRUSTED"}\end{verbatim} . The honeypot receives ,from every connection to check, 2 data: the peer name that will be saved and then resent to the dispacher to specify what connection the honeypot is refeiring and the packet to analyze.\\ 
 The honeypot in principle handles only one request of checking the new connection, after a first test of the system we have decided that it could work with multiple connections.
 
 
@@ -150,10 +158,3 @@ After the presentation of our projects it was notice to our group that the honey
 
 
 
-
-
-
-
-
-%cancella
-This is where you explain what you have implemented and how you have implemented it. Place here all the details that you consider important, organize the chapter in sections and subsections to explain the development and your workflow.\\Given the self-explicative title of the chapter, readers usually skip it. This is ok, because this entire chapter is simply meant to describe the details of your work so that people that are very interested (such as people who have to evaluate your work or people who have to build something more complex starting from what you did) can fully understand what you developed or implemented.\\Don't worry about placing too many details in this chapter, the only essential thing is that you keep everything tidy, without mixing too much information (so make use of sections, subsections, lists, etc.). As usual, pictures are helpful.
