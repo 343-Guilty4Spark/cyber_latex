@@ -1,10 +1,17 @@
 \chapter{Implementation Details}
 \section{Case of study 1: Cluster and Honeypot for a Ransomware attack}
 \section{Case of study 2: Cluster and Honeypot for a DoS attack}
-\subsection{Instruments used}
+\subsection{Instruments used and workflow}
 In order to simulate our IoT cluster with the honeypot, we decide to implement a simulation using python. The most important aspect 
-to respect when developing a client-server application, like our ioT cluster, it that the servers and the sensors have to be able to exchange data 
-between each others. The module sockets present in  the python library allow us to support networking protocols between two or more processes across machines. In this particular case we use TCP sockets, where at one side a process act like a client and on the other side a process act like a server. Also python offer the module selectors that allow us to serve multiple sockets connections. In particular the .select() method allows us to check for I/O completion on more than one socket. So we can call .select() to see which sockets have I/O ready for reading and/or writing.  We also want to underline that with .select()  we’re not able to run concurrently. 
+to respect when developing a client-server application, like our ioT cluster, is that the servers and the sensors have to be able to exchange data 
+with each other. The module sockets present in the python library allow us to support networking protocols between two or more processes across machines. 
+In this particular case, we use TCP sockets, where on one side a process acts like a client and on the other side a process act like a server.
+ Also, python offers module selectors that allow us to serve multiple socket connections. In particular the .select() method allows us to check for I/O completion on more than one socket. So we can call .select() to see which sockets have I/O
+ ready for reading and/or writing.  We also want to underline that with .select()  we’re not able to run concurrently. 
+Regarding the workflow, we started with an example of scripts for client and server. Then we develop a theoretical model for the sensors, in this particular 
+implementation we focus on terminal and door. Then we test it with a server that could handle multiple connections. Then we develop the honeypot, first that handles only 
+one request of checking the new connection, then that could work with multiple connections. Than we create an IPS that could interact with sensors, server and the honeypot. 
+After we transform the IPS into a simple dispatcher. In the last, we run the scripts and see if together can work correctly.  
 \subsection{ First structure of the IoT cluster}
 In our first simulation we decided to implement an high-interaction honeypot and a cluster reported in the figure below.
 \begin{figure}[h!]
