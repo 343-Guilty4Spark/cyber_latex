@@ -1,41 +1,15 @@
 \chapter{Results}
-
-\subsection{Case of study 1: Cluster and Honeypot for a Ransomware attack}
-
-\subsection{Case of study 2: Cluster and Honeypot for a DoS attack}
-
-\subsubsection{High level version}
-We run the DosAttack.sh with different number of scripts launched, 50,100,150,200 and 400. For this version, the cluster with the honeypot was able to handle up to 200 fake sensors. 
-Unfortunately with 400 Dos scripts the virtual machine where the system is simulated wasn't able to establish all the sockets, due to the high number of resources requested.
-
-\subsubsection{Low level version} 
-We run the DosAttack.sh with different number of scripts launched, 50,100,150,200 and 400. For this version, the cluster with the honeypot inside the dispatcher was able to handle
- up to 400 fake sensors. 
-This version works better than the other because the dispatcher don't have to redirect the data from the Dos sensors to the honeypot, because it is instantiated inside it.
-
 In this chapter we expect you to list and explain all the results that you have achieved. Pictures can be useful to explain the results. Think about this chapter as something similar to the demo of the oral presentation. You can also include pictures about use-cases (you can also decide to add use cases to the high level overview chapter).
-
+\\
+The result obtained are two solutions for two different attacks on two complementary clusters, a P2P cluster where therefore all the nodes are the same and talk to each other without hierarchies and a cluster that works in a very hierarchical way, with a main server and all the others that they accept connections from clients through a dispatcher.
+Same for the two attacks that are also completely different from each other as we have fully explained in the previous chapters.
+\\
+Testing the DoS solution we noticed that it is able to manage small DoS attacks (this is also due to the virtual machine which obviously does not allow an exhaustive test). If attacked, our solution manages to perfectly manage 100 attackers, without creating delay to the server, reaching up to ...
 
 \section{Known Issues}
-
-\subsection{Case of study 1: Cluster and Honeypot for a Ransomware attack}
-
-\begin{itemize}
-  \item Although the masking of commands is ready, the commands dispatched by the ransomware cannot fully exploit it. It was hard to find the correct series of bash commands that could encrypt a file system and at the same time show all benefits provided by the redirection of commands;
-  \item JSON decode function returns a decode error, once in a while, when reading the file "blacklist.json". This only happens rarely.
-\end{itemize}
-
-\subsection{Case of study 2: Cluster and Honeypot for a DoS attack}
-
-Please connect the doors BEFORE the terminal, if we do the opposite sometimes it doesn't work.  
-
-
+If there is any known issue, limitation, error, problem, etc...explain it in this section. Use a specific subsection for each known issue. Issues can be related to many things, including design issues.
+\subsection{Hardware Limitation}
+The Dos solution has suffered a lot from the limited number of raspberry available this because, differently from the solution developed in parallel, it needs two additional raspberries for dispatchers and honeypots that behave differently from all of them, for this reason the solution is limited to a single server , dispatcher, honeypot, and two types of clients.
 \section{Future Work}
-
-\subsection{Case of study 1: Cluster and Honeypot for a Ransomware attack}
-
-In a later release of this project we could develop a more realistic ransomware or even deploy a real one and release it on a virtualized space in our machines so that it would not affect real systems.\\
-We could also shift from a polling monitoring to a smarter one that needs less effort. For instance, we could just monitor the integrity of sentinel files after a command is dispatched.
-
 \subsection{Case of study 2: Cluster and Honeypot for a DoS attack}
-There are many way to improve our simulation before deploy it on a real hardware implementation. First we need to model more sensor. Then we need to encript and decript the data in the socket, otherwise the attacher could understand the ID of the sensors and invalidate the honeypot. Then we have to create a server that work on multiple thread and that is able to speak with other servers. 
+There are many way to improve our simulation before deploy it on a real hardware implementation. First we need to model more sensor. Then we need to encript and decript the data in the socket, otherwise the attacher could understand the ID of the sensors and invalidate the honeypot. Then we have to create a server that works on multiple thread and that is able to speak with other servers. 
