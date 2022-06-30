@@ -37,11 +37,11 @@ In this example, the architecture of the network is a full mesh, implying that e
 Raspberry devices exchange messages via MQTT, a lightweight publish/subscribe protocol. \\
 Each device can manage messages of two kinds:
 
-%\begin{itemize}
-%  \item Dispatched commands. They should arrive from the dispatcher in the network (not shown here). The ransomware will pretend to be the dispatcher to let a victim device execute malicious encryption;
-%  \item Attack notifications. If under attack, a device broadcasts a message stating that is the victim of an attack in progress.
-%\end{itemize}
-% DA REINSERIRE
+\begin{itemize}
+ \item Dispatched commands. They should arrive from the dispatcher in the network (not shown here). The ransomware will pretend to be the dispatcher to let a victim device execute malicious encryption;
+  \item Attack notifications. If under attack, a device broadcasts a message stating that is the victim of an attack in progress.
+\end{itemize}
+
 
 \subsubsection{Defensive Mechanism}
 
@@ -55,36 +55,13 @@ Masking (or redirection) of some linux commands is provided to help sentinel fil
 \noindent Most real ransomware would have been too harmful and many of them could have put our systems in danger. We chose to build our own ransomware that claims to be the dispatcher and sends messages (containing bash commands) to a victim in the cluster. \\
 Ransomware aim at encrypting the victim's file system thanks to asymmetryc encryption. They try to encrypt the victim's file system with their own public key, obliging the victim to restore data by applying decryption with the ransomware's private key, that is secret until a payment is received.
 Our ransomware performs the following steps:
-%\begin{enumerate}
-%  \item Creation of a pair of asymmetric keys;
-%  \item Injection of the public key in the victim's file system;
-%  \item Encryption, directory by directory, of each file in the victim's file system using the public key.
-%\begin{enumerate}
-% DA REINSERIRE
+\begin{enumerate}
+  \item Creation of a pair of asymmetric keys;
+  \item Injection of the public key in the victim's file system;
+  \item Encryption, directory by directory, of each file in the victim's file system using the public key.
+\end{enumerate}
 
 
-%\noindent Any Raspberry Pi in the picture represents a server, each connected to more clients (not shown in the picture). Such servers are then connected among each other through a network and a communication protocol.\\
-%In this example, the architecture of the network is a full mesh, implying that each server is directly connected to any other. You could think of this network as either a local area network (LAN) or wide area network (WAN). They offer two different flavors of the same problem since in LANs you assume that all devices belonging to the network own a different local IP address and you should deal with the NAT system, while in a WAN servers have different public IP addresses and you should deal with DNS in order to communicate with each node in the network. \\ 
-%Here, the traffic entering the network can be either legitimate or a ransomware attack, benign or malign respectively.\\
-%As to the communication protocol, IoT systems mainly rely on REST or MQTT. In this context we could think of servers as MQTT subscriber \& publisher (at the same time), since each server is supposed both to receive and send data. The MQTT broker is the entity through which any data packet has to pass to be forwarded from the publisher to the subscriber.\\
-%Even though the underlying hardware is the same for each of the servers, one of them plays a different role: it behaves as a malware honeypot.\\
-%All raspberry devices store two distinct types of files: production value files and sentinel files.
-%Sentinel files are spread in the network with the sole purpose of being a bait for ransomware. Such files are useless for production, thus no any trusted node in the network should change their content. Any change should be assumed as malicious.\\
-%The task of the honeypot is to monitor the hash digest of sentinel files. If it changed, then there is a very high chance of being under ransomware attack (since sentinel files do not provide production value and therefore are useless for any legitimate operation).\\
-%A rudimentary script that analyses differences on sentinel files could be the following:\\
-%%\begin{tabbing}
-%%\footnotesize\texttt{if ((Get-FileHash "./baitFile.txt").hash -ne (Get-FileHash "./baitFile.txt").hash)\\ {\> stop-service "serviceName" -force} }\\\\
-%%\texttt{if ((\=Get-FileHash "./baitFile.txt").hash -ne (Get-FileHash "./baitFile.txt").hash)
-%%\> stop-service "serviceName" -force}
-%%\end{tabbing}
-%Heuristics are available since studies show that ransomware tend to encrypt files starting in alphabetical order (or inverse alphabetical order), thus you can name the sentinel files accordingly. As an example, placing files called "\#\#\#aBaitFile.txt" would be among the first ones to be encrypted with an alphabetical attack.\\
-%The computation of hash digests with respect to checking the whole content is a clear advantage regarding speed.\\
-%If a difference in the hash digest is present, then a response takes place. The most straightforward response is the shutdown of communication in the whole network and the insertion of the attacker's IP in a blacklist, denying its upcoming traffic.\\
-%%While some studies raised doubts about the efficiency of such a simple honeypot, it is worth reminding that it comes at zero cost and therefore is a valuable option because the placement of a honeypot is an improvement on no monitoring at all, as every study agrees.\\
-%%As to the ransomware, we could either think of using a real one exposing the system to a real threat or deploy some simulated, ad-hoc malware. Some material is available online regarding the creation of simple ransomware via PowerShell, as reported in link {[19]} of the Appendix.
-%An improvement with respect to the scenario depicted above could be the deployment of multiple honeypots at the same time, allowing more servers to monitor sentinel files.\\
-%The proof of concept can be constructed thanks to a simulated ransomware attack. Some material is available online regarding the creation of simple ransomware via PowerShell, as reported in "How to: Simulating A Ransomware Attack With PowerShell" \cite{Howto}.
-% QUESTO NO
 
 
 \section{Case of study 2: Cluster and Honeypot for a DoS attack}
@@ -106,7 +83,7 @@ In the last years it becomes more and more important to avoid waste of energy at
 \end{figure}
 \FloatBarrier
 \noindent
-The cluster consists of a main server to which the various edge servers are connected so a client  from the outside will turn out to be the leaf of this tree that can also evolve in multiple layers, in this case we preferred to remain fairly simple. The dispatcher, once the client sends a packet, redirects it to the server it is interacting with, every time a new connection arrives the dispatcher evaluates it as "harmful" then sends all the packets to the honeypot which, while the dispatcher continues the his job, checks that this client is credible and redirects the response to the dispatcher so that he is free to create a new connection with one of the servers. When a client is malicious (it sends too many packets, or with an unconfirmed structure) the honeypot writes the IP to a blacklist and then the dispatcher silences the connection, so the DOS attacker will seem to be sending data but actually can't slow down the system.
+The cluster consists of a main server to which the various edge servers are connected so a client  from the outside will turn out to be the leaf of this tree that can also evolve in multiple layers, in this case we preferred to remain fairly simple. The dispatcher, once the client sends a packet, redirects it to the server it is interacting with, every time a new connection arrives the dispatcher evaluates it as "harmful" then sends all the packets to the honeypot which, while the dispatcher continues the his job, checks that this client is credible and redirects the response to the dispatcher so that he is free to create a new connection with one of the servers. When a client is malicious (it sends too many packets, or with an unconfirmed structure) the honeypot writes the IP to a blacklist and then the dispatcher silences the connection, so the DOS attacker will seem to be sending data but actually can't slow down the system. In a litle system we could think of one dispatcher that manage all the servers indeed for a more larger one ,to better deliver the traffic and have less delay, is a good choice to have more than one dispatcher each one that manage a part of the cluster.\\
  For example, our attacker implement a bot that connect to the system and create thousands of fake temperature sensor that send random and wrong data to the server. Our dispatcher usually send new traffic connection to the honeypot, that will analyse the data . If this is no sense data, the honeypot will store in a log file(black list) the IP addresses of the fake sensor and will told to the dispatcher  to avoid accept new packets from that IP.
 In a more simple way of cluste rwe can think of having much fewer packets and therefore of having less traffic in the dispatcher, if so we can then merge the dispatcher and the honeypot so that the check is faster without fill the dispatcher too much.
 
@@ -148,9 +125,6 @@ In a second look we noticed that ips was simple and much more like a dispatcher 
 
 
 
-
-%DELETE THIS AT THE END
-In this chapter you should provide a general overview of the project, explaining what you have implemented staying at a high-level of abstraction, without going too much into the details. Leave details for the implementation chapter. This chapter can be organized in sections, such as goal of the project, issues to be solved, solution overview, etc.\\It is very important to add images, schemes, graphs to explain the original problem and your solution. Pictures are extremely useful to understand complex ideas that might need an entire page to be explained.\\Use multiple sections to explain the starting point of your project, the last section is going to be the high-level view of your solution...so take the reader in a short `journey` to showcase your work.
 
 
 
