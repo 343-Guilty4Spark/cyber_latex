@@ -24,7 +24,9 @@ Testing the DoS solution we noticed that it is able to manage small DoS attacks 
 \subsection{Case of study 1: Cluster and Honeypot for a Ransomware attack}
 
 \begin{itemize}
-    \item Although the masking of commands is ready, the commands dispatched by the ransomware cannot fully exploit it. It was hard to find the correct series of bash commands that could encrypt a file system and at the same time show all benefits provided by the redirection of commands;
+    \item The masking of commands is ready and functional, but the commands dispatched by the ransomware cannot fully exploit it. So far the only strategy adopted is considering an encryption procedure capable of encrypting files retrieved in a recursive manner with the 'find' command, thus in alphabetical order. 
+    Files we are delivering will include the code that was intended to show the behavior of commands masking procedure. Unfortunately, sending this long command through MQTT will broke it's the execution for some reason that we were not able to solve in a complete way. Specifically the malwere command will recursively list all files applying then the very same encryption mechanism as before. The custom visit to the system directory allows the insertion of the specific masked commands.
+    Although this is an issue it is now the main target for future works at the moment of deliverance;
     \item JSON decode function returns a decode error, once in a while, when reading the file "blacklist.json", this only happens rarely.
 \end{itemize}
 
@@ -40,8 +42,8 @@ The Dos solution has suffered a lot from the limited number of raspberry availab
 
 \subsection{Case of study 1: Cluster and Honeypot for a Ransomware attack}
 
-In a later release of this project we could develop a more realistic ransomware or even deploy a real one and release it on a virtualized space in our machines so that it would not affect real systems.\\
-We could also shift from a polling monitoring to a smarter one that needs less effort. For instance, we could just monitor the integrity of sentinel files after a command is dispatched.
+In a later release of this project we could develop a more realistic ransomware, also considering issues of the actual implementation, or even deploy a real one and release it on a virtualized space to limit damages.\\
+We could also shift from a polling monitoring to a smarter one that needs less effort. For instance, we could just monitor the integrity of sentinel files after a command is dispatched. There is also the possibility of wrapping linux system calls directly gaining a more precise way to manage and check sentinel files, in this case the root of trust will be the kernel space of the operating system.
 
 \subsection{Case of study 2: Cluster and Honeypot for a DoS attack}
 There are many way to improve our simulation before deploy it on a real hardware implementation. First we need to model more sensor. Then we need to encript and decript the data in the socket, otherwise the attacher could understand the ID of the sensors and invalidate the honeypot. Then we have to create a server that works on multiple thread and that is able to speak with other servers. 
