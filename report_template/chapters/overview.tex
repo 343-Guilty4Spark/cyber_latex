@@ -4,13 +4,17 @@ In this chapter we give a summary of the two very different solutions, thanks to
 
 \section{Case of study 1: Cluster and Honeypot for a Ransomware attack}
 
-\subsection{Goal of the project}
-
-
-
 \subsection{Problem}
 
+Malware are one of the major threats nowadays. They continue evolving, making it difficult for countermeasures to be always up to date. \\
+Among malware, particular importance is given to ransomware. Ransomware is a category of malware whose goal is to encrypt, maliciously, data on a target device. Ransomware creators aim at receiving a payment in order to provide the original data back to the owner. Studies show that even if the victim accepts to pay, not always all data is retrieved. You should always consider that you are dealing with cyber criminals that don't have good intentions. The payment is often in untracked currencies, such as bitcoins.\\
+Moreover, ransomware is a rising threat. The 2,084 ransomware complaints received by the IC3 in the first half of 2021 amounted to over \$16.8 million in losses.
 
+METTI FONTE STUDIES SHOW e RISE RECENT YEARS
+
+\subsection{Goal of the project}
+
+The goal of the project is to provide a possible countermeasure to ransomware attacks based on the sole usage of tripwire files ("sentinel files") spread in the file system and redirection of some linux commands, such as "sort -R".
 
 \subsection{Solution Overview}
 
@@ -33,10 +37,10 @@ In this example, the architecture of the network is a full mesh, implying that e
 Raspberry devices exchange messages via MQTT, a lightweight publish/subscribe protocol. \\
 Each device can manage messages of two kinds:
 
-%\begin{itemsize}
-%	\item Dispatched commands. They should arrive from the dispatcher in the network (not shown here). The ransomware will pretend to be the dispatcher to let a victim device execute malicious encryption;
-%	\item Attack notifications. If under attack, a device broadcasts a message stating that is the victim of an attack in progress.
-%\end{itemsize}
+%\begin{itemize}
+%  \item Dispatched commands. They should arrive from the dispatcher in the network (not shown here). The ransomware will pretend to be the dispatcher to let a victim device execute malicious encryption;
+%  \item Attack notifications. If under attack, a device broadcasts a message stating that is the victim of an attack in progress.
+%\end{itemize}
 % DA REINSERIRE
 
 \subsubsection{Defensive Mechanism}
@@ -44,17 +48,18 @@ Each device can manage messages of two kinds:
 \noindent Each raspberry stores both files that are needed for the various operations it has to perform (e.g., files storing data from sensors) and files that are useless to the purpose of the cluster. The latter ones are better known as "sentinel files". Nobody should ever interact with sentinel files since they are useless for benign purposes, thus every modification to them must be considered as malicious.\\
 Each raspberry runs a periodic check on the status of its own sentinel files, by checking their hash digest. If a mismatch takes place, then an attack notification is broadcasted and the node performs a shutdown, both avoiding to encrypt all its file system and avoiding to infect other nodes in the cluster. This operation is crucial, it grantes that the ransomware cannot spread out of the victim's file system. \\
 The infected raspberry is inserted in a blacklist by all other nodes in the cluster, its messages are not read anymore because they are considered malicious. The node is deleted from the blacklist after a fixed amount of time. During this interval, a technician is supposed to perform a reset of the infected device.\\
+Masking (or redirection) of some linux commands is provided to help sentinel files always appear as first encountered by the ransomware. Masking is provided for some options of commands "ls", "sort" and "rm" that could affect the order thanks to which files are displayed in a directory.
 
 \subsubsection{Ransomware}
 
-\noindent Most real ransomware would have been too strong and many of them could have put our systems in danger. We chose to build our own ransomware that claims to be the dispatcher and sends messages (containing bash commands) to a victim in the cluster. \\
+\noindent Most real ransomware would have been too harmful and many of them could have put our systems in danger. We chose to build our own ransomware that claims to be the dispatcher and sends messages (containing bash commands) to a victim in the cluster. \\
 Ransomware aim at encrypting the victim's file system thanks to asymmetryc encryption. They try to encrypt the victim's file system with their own public key, obliging the victim to restore data by applying decryption with the ransomware's private key, that is secret until a payment is received.
 Our ransomware performs the following steps:
 %\begin{enumerate}
-%	\item Creation of a pair of asymmetric keys;
-%	\item Injection of the public key in the victim's file system;
-%	\item Encryption, directory by directory, of each file in the victim's file system using the public key.
-%\end{enumerate}
+%  \item Creation of a pair of asymmetric keys;
+%  \item Injection of the public key in the victim's file system;
+%  \item Encryption, directory by directory, of each file in the victim's file system using the public key.
+%\begin{enumerate}
 % DA REINSERIRE
 
 
