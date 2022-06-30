@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (MiKTeX 22.3) (preloaded format=xelatex 2022.6.19)  19 JUN 2022 21:15
+This is XeTeX, Version 3.141592653-2.6-0.999994 (MiKTeX 22.3) (preloaded format=xelatex 2022.6.19)  30 JUN 2022 15:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -641,11 +641,6 @@ Overfull \hbox (53.23228pt too wide) in paragraph at lines 7--8
 
 ]
 Chapter 1.
-
-Underfull \hbox (badness 10000) in paragraph at lines 2--9
-
- []
-
 ) (chapters/background.tex [2
 
 ]
@@ -653,12 +648,12 @@ Chapter 2.
 [3
 
 ] [4]
-Underfull \hbox (badness 10000) in paragraph at lines 51--53
+Underfull \hbox (badness 10000) in paragraph at lines 50--52
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 51--53
+Underfull \hbox (badness 10000) in paragraph at lines 50--52
 
  []
 
@@ -780,26 +775,28 @@ Chapter 4.
 File: images/ramsonwareHoneypot.png Graphic file (type bmp)
 <images/ramsonwareHoneypot.png>
 
-Overfull \hbox (14.22636pt too wide) in paragraph at lines 11--12
+Overfull \hbox (14.22636pt too wide) in paragraph at lines 27--28
  [][] 
  []
 
 
-LaTeX Warning: Citation `Howto' on page 24 undefined on input line 38.
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [24
 
-]
+] [25]
 
-LaTeX Warning: Citation `7944057' on page 25 undefined on input line 45.
+LaTeX Warning: Citation `7944057' on page 26 undefined on input line 70.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 44--49
+Underfull \hbox (badness 10000) in paragraph at lines 69--74
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 51--52
+File: images/IOTlever2IPS.png Graphic file (type bmp)
+<images/IOTlever2IPS.png>
+[26]
+Underfull \hbox (badness 10000) in paragraph at lines 95--96
 
  []
 
@@ -808,47 +805,122 @@ File: images/IOTIPS.drawio.png Graphic file (type bmp)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[25]
+[27]
 File: images/IOTIDS.drawio.png Graphic file (type bmp)
 <images/IOTIDS.drawio.png>
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[26]
+[28]
 File: images/IOTlevel2IPS.drawio.png Graphic file (type bmp)
 <images/IOTlevel2IPS.drawio.png>
-File: images/climatOffice.drawio.png Graphic file (type bmp)
-<images/climatOffice.drawio.png>
- [27]) (chapters/implementation.tex [28]
+) (chapters/implementation.tex [29]
 Chapter 5.
+
+Overfull \hbox (0.2523pt too wide) in paragraph at lines 6--16
+\TU/lmr/m/n/10 The last phase of the project focused on the deployment of ranso
+mware to test the defensive mechanism.
+ []
+
+[30
+
+]
+Overfull \hbox (53.72932pt too wide) in paragraph at lines 24--27
+\TU/lmr/m/n/10 <dest_node_ID>, ”command” : <command>}. The topic is ”PoliTo/C4E
+S/<dest_node_ID>/command”. 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 34--41
+
+ []
+
+[31] [32]
+Underfull \hbox (badness 10000) in paragraph at lines 74--76
+
+ []
+
 File: images/HighInterationHoneypot.drawio.png Graphic file (type bmp)
 <images/HighInterationHoneypot.drawio.png>
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[29
-
-]
+[33] [34]
 File: images/lowInterationHoneypot.drawio.png Graphic file (type bmp)
 <images/lowInterationHoneypot.drawio.png>
-) (chapters/results.tex [30] [31]
+ [35]) (chapters/results.tex [36]
 Chapter 6.
-) (chapters/conclusions.tex [32
+) (chapters/conclusions.tex [37
 
 ]
 Chapter 7.
-) (chapters/references.tex) (appendices/usermanual.tex [33
+) (chapters/references.tex) (appendices/usermanual2.tex [38
 
 ]
 Appendix A.
-) (appendices/API.tex [34
+) (appendices/usermanual1.tex [39
 
 ]
 Appendix B.
+
+Overfull \hbox (19.73228pt too wide) in paragraph at lines 7--7
+ []\TU/lmtt/m/n/10 ~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python hone
+ypot.py 127.0.0.2 65430 
+ []
+
+
+LaTeX Warning: Characters dropped after `\end{verbatim}' on input line 7.
+
+
+Overfull \hbox (40.73228pt too wide) in paragraph at lines 8--8
+ []\TU/lmtt/m/n/10 ~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python mult
+iServer2.py 127.0.0.3 65429 
+ []
+
+
+LaTeX Warning: Characters dropped after `\end{verbatim}' on input line 8.
+
+
+Overfull \hbox (24.98228pt too wide) in paragraph at lines 9--9
+ []\TU/lmtt/m/n/10 ~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python disp
+acher.py 127.0.0.1 65430 
+ []
+
+
+LaTeX Warning: Characters dropped after `\end{verbatim}' on input line 9.
+
+
+LaTeX Warning: Characters dropped after `\end{verbatim}' on input line 12.
+
+[40
+
+]
+Overfull \hbox (40.73228pt too wide) in paragraph at lines 18--18
+ []\TU/lmtt/m/n/10 ~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python mult
+iServer2.py 127.0.0.3 65429 
+ []
+
+
+LaTeX Warning: Characters dropped after `\end{verbatim}' on input line 18.
+
+
+Overfull \hbox (56.48228pt too wide) in paragraph at lines 19--19
+ []\TU/lmtt/m/n/10 ~/pythonImplementation\_29\_06\_HIGHLEVELHONEY\$ python disp
+acherAndPot.py 127.0.0.1 65430 
+ []
+
+
+LaTeX Warning: Characters dropped after `\end{verbatim}' on input line 19.
+
+
+LaTeX Warning: Characters dropped after `\end{verbatim}' on input line 22.
+
+[41]) (appendices/API.tex [42]
+Appendix C.
 )
 No file report.bbl.
-[35
+[43
 
 ] (report.aux)
 
@@ -863,16 +935,16 @@ Package rerunfilecheck Warning: File `report.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `report.out':
-(rerunfilecheck)             Before: 6FA17AE3C848EA4D3ED6F323AF952199;9105
-(rerunfilecheck)             After:  A4016E864F1B179FA46E5AD68389BFAB;9202.
+(rerunfilecheck)             Before: 082672524CFB3DD1190E8EC91E42AF1F;9250
+(rerunfilecheck)             After:  9CA3EA4627ADF1BCC120F73BDE609D4B;13795.
  ) 
 Here is how much of TeX's memory you used:
- 15333 strings out of 410967
- 246664 string characters out of 2823753
- 589286 words of memory out of 3000000
- 35806 multiletter control sequences out of 15000+600000
+ 15338 strings out of 410967
+ 246740 string characters out of 2823753
+ 593392 words of memory out of 3000000
+ 35808 multiletter control sequences out of 15000+600000
  471438 words of font info for 52 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 60i,12n,64p,1308b,469s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 60i,12n,64p,1451b,469s stack positions out of 10000i,1000n,20000p,200000b,80000s
 
-Output written on report.pdf (40 pages).
+Output written on report.pdf (48 pages).
