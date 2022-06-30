@@ -117,15 +117,20 @@ request the status, the door check the variable STATUS and sent it value to the 
 \subsubsection{Terminal.py}
 This script represent a terminal where the admin of the IoT cluster could control the sensors and check the status of the system. The terminal offer a set of command to visualize the number of client connected to the cluster, send command to control them and receave all the status of all the clients, a better description is reported in the user manual.\\
 The terminal at the begin for the system is a normal client so is always check by the Honeypot if it is trusted after that it can starts to send packets from the user.
-The packets sended from the terminal has the same structure described before, the user can decide the status (in this case for the door LOCK/UNLOCK.\\%il terminal risponde con qualcosa quando viene mandato il dato? se si scrivere come risponde
+ The packets sended from the terminal has the same structure described before, the user can decide the status (in this case for the door LOCK/UNLOCK).
+The structure of the packets from the server to the terminal depends from the command sended by the terminal. Here we report some example:
+\begin{enumerate}
+  \item if the terminal want to open the door 1, the server will return :  \begin{verbatim}{topic: SERVER data: OPEND data2: UNLOCK  IPFALSE: someData}\end{verbatim}
+  \item  if the terminal want to close the door 2, the server will return :  \begin{verbatim}{topic: SERVER data: CLOSED data2: LOCK  IPFALSE: someData}\end{verbatim}
+  \item if the terminal want to see the status of door 2, the server will return :  \begin{verbatim}{topic: SERVER data: GETSTATUSD data2: 2\_LOCK/UNLKOCK  IPFALSE: someData}\end{verbatim}
+\end{enumerate}
 As it is implemented, if the terminal do not receive a response from the server, it stops working.  In future version we could add a timer, and ,after some time elapsed, we stop wainting from the response and rise an error.
 
 
 
 
 \subsubsection{MultiServer2.py}
-The server have to handle all the connection of the sensors. It have to connect the terminal to the doors, and send the command to the correct door. If the command is for all the doors connected, it creates and sends  packets with the command to all of them. It has a list of sockets of the doors and a list for the socket of the terminals, when it needs to send a packet checks always that list to find the istance of the right socket, each socket comunicates with the dispatcher this because the server needs to be reached only by the packtes from the dispacher, there is no connection between the server and the client, so each time a new connection arrives  a new socket is created between the server and the dispatcher for that specific client.\\
-%serve a questo? la lista di client è usata anche per altro? 
+The server have to handle all the connection of the sensors. It have to connect the terminal to the doors, and send the command to the correct door. If the command is for all the doors connected, it creates and sends  packets with the command to all of them. It has a list of sockets of the doors and a list for the socket of the terminals, when it needs to send a packet checks always that list to find the istance of the right socket, each socket comunicates with the dispatcher this because the server needs to be reached only by the packtes from the dispacher, there is no connection between the server and the client, so each time a new connection arrives  a new socket is created between the server and the dispatcher for that specific client.
  As it is implemented, our system work with only one terminal connected to the server, but this could be ealisy changed. 
 
 
