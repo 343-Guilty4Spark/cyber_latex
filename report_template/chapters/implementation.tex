@@ -1,5 +1,74 @@
 \chapter{Implementation Details}
 \section{Case of study 1: Cluster and Honeypot for a Ransomware attack}
+
+\subsection{Workflow}
+
+After a first phase of research related to honeypots, their taxonomy and features, the work shifted to an actual implementation of at least one of the use cases. In this section the use case regarding a malware honeypot is tackled.\\
+In the very first days, the idea was to consider 4 ESP32 devices as nodes in the cluster. ESP32 is a brilliant device due to its low cost but it lacks some of the features needed for this project, such as a reasonable memory capacity to store enough data files.\\
+Therefore, the second option consists in using 4 Raspberry Pi devices due to their memory storage, way wider than ESP32.\\
+Once the OS, a lighter distribution of Linux released for Raspberry, got mounted, the actual development started.\\
+At first, a Python script to build a randomly generated file system got released ("createProductionFiles.py"). This script only generates production files and not sentinel files.\\
+Then, a new Python script ("createSentinels.py") was used to generate sentinel files and spread them across the file system.\\
+For each Raspberry, two scripts ("NEWNEWpubsub.py" and "rpiClient.py") provide MQTT and monitoring functionalities.\\
+The last phase of the project focused on the deployment of ransomware to test the defensive mechanism. Literature shows examples of ransomware that can be generated thanks to PowerShell commands, but the final choice was to create an ad-hoc ransomware thanks to a further Python script ("rpiClientPubOnly.py").\\
+The first idea regarding the defensive mechanism was to develop a honeypot on one of the machines in the cluster. This could make all other nodes way simpler and they should only perform functional tasks, exempting them from performing security tasks. On the other hand, if any attack targets the honeypot, then security over the whole cluster is compromised.\\
+The current implementation includes a different solution based on a distributed honeypot in the cluster: each node both performs functional and security tasks. If a node is offline, other nodes will still perform honeypot tasks and security is not compromised.
+
+
+\subsection{Structure of the IoT cluster and cluster functionalities}
+
+As previously mentioned, the cluster shows a fully connected mesh topology thanks to which each node can communicate to any other in the cluster. This is posssible thanks to MQTT, a communication protocol based on the publish/subscribe paradigm. A node can be a publisher, a subscriber or even both kinds of entities. MQTT is one of the most popular protocols in IoT due to its light header overhead and broadcast features. Subscriber nodes subscribe to a topic and whenever a publisher node communicates a message in the network with the very same topic, such subscribers are able to collect it. A drawback of this approach is the presence of a message broker in the middle of each peer to peer communication. A message broker is an entity, external to the cluster, that receives messages by publishers and forwards them to subscribers. In the case of this project, the message broker is hosted by test.mosquitto.org.\\
+Messages exchanged in the cluster can be of two kinds, with the possibility to extend to further kinds:
+
+\begin{itemize}
+  \item Commands. They represent the functional aspect of the cluster taken into account. Normally such messages should be published by the dispatcher in the cluster but it is also possible to assume that in a load balancing cluster a node overloaded with work can delegate another node to perform some of the tasks, thus sending a bash command via MQTT message. This is clearly a vulnerability of the cluster, that the ransomware will try to exploit.\\
+This kind of message shows the following structure, in JSON: \{"src" : <publisher\_ID>, "dest" : <dest\_node\_ID>, "command" : <command>\}. The topic is "PoliTo/C4ES/<dest\_node\_ID>/command".\\
+It is important to notice that any command dispatched to any of the machine is logged in a text file, "log.txt". This feature is compliant to the research purposes of a malware honeypot, that lets the malware move freely in a confined space and records its behavior both for research purposes and for improving security thanks to newly collected information;
+  \item Attack notifications. A node (hereafter referred to as "victim" node) will broadcast a message of this kind if the periodic check on sentinel files fails. All other nodes in the cluster collect this message and will insert the victim node to their own internal blacklist because the victim's messages are no longer considered reliable, since an infection is in progress. The victim is deleted from the blacklist aftter a fixed amount of time.
+This kind of message shows the following structure, in JSON: \{"hash\_mismatch\_in" : <sentinel\_file\_path>, "untrust\_topic" : <victim\_node\_pubTopic>\}. The topic is "PoliTo/C4ES/<victim\_node\_ID>/attack".
+\end{itemize}
+
+
+\subsection{Creation of File System}
+
+Production files are files that contain useful data to be elaborated in the cluster. An example could be data gathered from sensors spread in a wide area that are then all forwarded to the nodes in the cluster for some post processing operation. Such post processing operations could be too complex to be performed on the edge by sensor nodes. For instance, you could think of some FIR filters that cut out sensed measures that show too much difference with respect to recent values (it is the case for analog sensed measures, such as temperature).\\
+In this version of the project, production files are filled with random content since nobody will ever operate on data. The file system is filled, in every directory, with a variable number of production files thanks to "createProductionFiles.py".\\
+Sentinel files, on the other hand, are deployed with the sole purpose of being tripwires for an attacker. Their content, in this version of the project, is also randomly generated. They should always appear on top and bottom of the list of files displayed in a directory. This feature got implemented by ordering production files alphabetically, extracting the first and the last file names and finding names for sentinels (thanks to the ASCII table) such that they would get over the first and last production files. For example, if alphabetically the first and last production files are named "aProductionFile.txt" and "zProductionFile.txt", then two sentinels are named "0aProductionFile.txt" and "zQroductionFile.txt" respectively.\\
+Other sentinels are deployed in the same directory, in the middle of production files, thanks to a logic based on ASCII as well. This system does not aim at filling up the file system with sentinels. On the other hand, its goal is to place them in a smart way. The number of sentinels is proportional to the number of production files, in a 1:3 ratio.\\
+Placing a sentinel at the bottom of the files list is crucial for preventing malicious actions by the malware. If the malware understands that sentinel files are present, a trivial way to avoid encountering sentinel files could be simply reversing the displayed list of files.\\
+Once a sentinel file is created, its hash digest and name are stored in a file, in the very same directory, called ".hashes.txt". This file, once the sentinels are all created, is set in READONLY mode and stores the original hash values for the integrity check on sentinels.\\
+This is a case in which we consider the command "chmod" as our root of trust.\\
+
+
+\subsection{Monitoring Phase}
+
+Integrity is the cybersecurity property according to which the content of a file or a message should not change in an undesired manner with respect to the legitimate parties involved in the management of the message or file itself.\\
+Checking the content of all sentinel files in the file system is an operation that is too expensive due to the high time of computation. Moreover, it is a cost that depends linearly on the size of the file to check.\\
+Hash digests provide a simple, yet reliable, way to check the integrity of a file by simply asserting that its hash digest is the same as the one previously stored and kept safe. This is a reasonable statement as long as the original hash digests are kept away from attacks and the hash algorithm cannot be cracked in short time. A way to crack hash algorithms relies on finding a collision. A collision is a couple of plaintext messages that both lead to the same digest. Hash algorithms create a "summary" of the content of a file or message, thus they are always collision prone. SHA512 got chosen as hash algorithm thanks to its strong collision resistance properties.\\  
+Integrity check of sentinel files is performed periodically on each raspberry in the cluster. For each directory in the file system, the file ".hashes.txt" is read. For each sentinel present in the file, the hash digest is recomputed by means of SHA512 and matched against the stored hash. If a mismatch occurs in any of the sentinel files, then the raspberry (i.e., the victim of the attack) will perform two operations:
+
+\begin{enumerate}
+  \item An attack notification is broadcasted to all nodes in the cluster, which will no longer consider the victim as reliable;
+  \item An immediate shutdown is performed, breaking any possible encryption operation. In the current release, a technician is supposed to restore the status of the victim raspberry, by switching it on again within a fixed amount of time. Once this amount of time has elapsed, the victim node is considered reliable again.
+\end{enumerate}
+
+
+\subsection{Ransomware}
+
+As previously mentioned, an adoption of a real ransomware got discarded. However, the ad-hoc ransomware shows all the significant operations that a real one would perform.\\
+Also, some enhanced attack features are taken into account. For instance, we supposed that once a ransomware is in the victim's system it might understand that some tripwire files are placed (since it is a well known technique) and therefore might perform some files reordering. Files reordering could arrange files in a way such that production files could be encountered first, compromising the defensive mechanism. Such an arrangement is not possible in our solution since a masking of some bash commands is performed, not allowing harmful commands such as "sort -r" that would order files in a random way, in a given directory. Command redirection is tackled in the next section of this chapter.\\
+In this cluster structure, the vulnerability that could be exploited by the ransomware is that there is no clear dispatching device to give commands. The ransomware could claim to be a node sending commands legitimately.\\
+The ransomware performs four main operations:
+
+\begin{enumerate}
+  \item A pair of asymmetric RSA keys is generated on its own system;
+  \item The public key is injected by means of a MQTT message to the victim's system, that has no means to deny the passage of the file;
+  \item The public key is imported by the victim because the ransomware dispatches a "gpg --import publicKey" command;
+  \item The encryption is performed recursively on the whole file system using the public key just injected. This means that the only way to recover files is to collect the private key owned by the ransomware.
+\end{enumerate}
+
+
+\subsection{Command Redirection}
 \section{Case of study 2: Cluster and Honeypot for a DoS attack}
 \subsection{Instruments used}
 In order to simulate our IoT cluster with the honeypot, we decide to implement a simulation using python. The most important aspect 
