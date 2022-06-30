@@ -71,9 +71,12 @@ targeted on IoT Networks}\cite{7944057} where we found an analysis of the usage 
 systems, Denial of Service (DoS) attack has been a nightmare for 
 communication networks over the years and they 
 pose a major security threat to IoT systems as well.\\
-So our goal in this part of the project is to structure a tree cluster and elaborate an honeypot to protect it from a DOS attack, maybe creating some context.
+\subsection{Goal of the project}
+
+The goal in this part of the project is to structure a tree cluster and elaborate an honeypot able to protect it from a DOS attack 
+focusing on the IoT aspect of the project and make the solution really usable by these small devices.
   
-\subsection{DOSPOTPY and climatOffice}
+\subsection{Solution overview: DOSPOTPY and climatOffice}
 In the last years it becomes more and more important to avoid waste of energy at home and at work, due to the increasing cost of energy and to the environmental impact from the chain of the energy supply. So a startup develop a new IoT system named climatOffice(This is only an imaginary company, it doesn't exist in the real life). This solution aims at control the temperature in every office of the company, using N temperature sensors in every room an at least one air conditioner. The desired temperature could be set by an external terminal to the server that control every room. If there are windows in the room, the system also offer the possibility to control the illumination using automatics roll-up shutter. The last feature of this IoT cluster is to possibly control the accesses to some vulnerable rooms, like the server's farm room. So it can lock or unlock some doors. It can do this last thing automatically or by a command from a terminal. A possible Dos attack could for example avoid the door to close or open, or shut down the air conditioner system. To avoid so we could implement our systemr like in the figures below.
 \begin{figure}[h!]
   \centering

@@ -70,10 +70,15 @@ The ransomware performs four main operations:
 
 \subsection{Command Redirection}
 \section{Case of study 2: Cluster and Honeypot for a DoS attack}
+
+For this implementation we started with an example of scripts for client and server that as the first prototypes of our cluster, the clients were then modified as we will see later to diversify and create the possible sensors of our cluster (in this case a door and a terminal).
+\\
+
 \subsection{Instruments used}
-In order to simulate our IoT cluster with the honeypot, we decide to implement a simulation using python. The most important aspect 
+ The most important aspect 
 to respect when developing a client-server application, like our ioT cluster, it that the servers and the sensors have to be able to exchange data 
 between each others. The module sockets present in  the python library allow us to support networking protocols between two or more processes across machines. In this particular case we use TCP sockets, where at one side a process act like a client and on the other side a process act like a server. Also python offer the module selectors that allow us to serve multiple sockets connections. In particular the .select() method allows us to check for I/O completion on more than one socket. So we can call .select() to see which sockets have I/O ready for reading and/or writing.  We also want to underline that with .select()  we’re not able to run concurrently. 
+
 \subsection{ First structure of the IoT cluster}
 In our first simulation we decided to implement an high-interaction honeypot and a cluster reported in the figure below.
 \begin{figure}[h!]
@@ -86,7 +91,9 @@ In our first simulation we decided to implement an high-interaction honeypot and
 \noindent
 We have different type of client (just like in the reality of an heterogeneous IoT cluster).
 In the nexts subsections we will explain the purpose of every script and how they interact. We would like to remind that on the git repository there is also a tutorial about the use of the first version of the cluster.
-\subsection{Door.py}
+For this implementation we started with an example of scripts for client and server that as the first prototypes of our cluster, the clients were then modified to diversify and create the possible sensors of our cluster (in this case a door and a terminal), while the server has been modified to handle more than one connection.
+
+\subsubsection{Door.py}
 This script represent a door that could be controlled by our system. It have a global variable named status , that could assume 2 values, UNLOCK and LOCK.
 This are the status of the door. When the "sensor" is turned on,  it send 2 packets to the server with the initial status of the door, then it wait for commands from the server.  The packets send by the door sensor have this format: "topic: DOOR data: LOCK/UNLOCK IPFALSE: 129.0.0.1". The IPFALSE filed was an attempt
 to mask the loopbacks IP with external IP, but then we understand that this was not necessary. A socket can be distinguished by another by the couple (IP,port) 
@@ -95,24 +102,24 @@ The data that the door could receive from the server have this format: "topic: S
 request the status, the door check the variable STATUS and sent it value to the server.  If the command is LOCK the STATUS variable is set to LOCK, if the command is UNLOCK the STATUS variable is set to UNLOCK.
 
 
-\subsection{terminal.py}
+\subsubsection{Terminal.py}
 This script represent a terminal where the admin of the IoT cluster could control the sensors. The terminal offer a set of command , that are reported in the user manual.\\
 As it is implemented, if the termianl do not receive a response from the server, it stops working.  In future version we could add a timer, and after some time elapsed, we stop wainting from the response and rise an error.
 
+\subsubsection{MultiServer2.py}
+The server have to handle all the connection of the sensors. It have to connect the terminal to the doors, and send the command from the terminal to the correct door. If the command is for all the doors connected, it send a packet with the command to all of them. It have a list of sockets of the doors and a list for the socket of the terminals. As it is implemented, our system work with only one terminal connected to the server, but this could be ealisy changed. The server have to nìbe reached only by the packtes from the dispacher. 
 
-\subsection{dispacher.py}
-The dispacher is the first line of defense controlled by our honeypot. All the new connection from outside the network are sent to the dispacher. Here we have 3 list in python, one for the trusted socket named socketWhiteList, that could communicate with the server. Every socket in the white list have a personal socket from the dispacher to the server, the couple is saved in the list coppiaSocketWhiteListSocketServer. The list socketPending save all the new connection from outside that are waiting from the response of the honeypot. When a new connection arrive to the dispacher, the packet sent are redirect to the honeypot. The packet from the dispacher to the honeypot are sent in the same socket named socket\_honey. When a response from the honeypot arrive, if the connection is approved the dispacher move the socket from the list of the pending one to the list of the whitesocket. If the connection is not approved the sockert is delete from the list of the pending one and closed forever.  When a new connection arrive, the dispache sent to the honeypot first the peer name of the new connection, and then the first packet received from it. While a connection is pending, all the other packets from outside are lost, it's just an implementation choise.
 
-\subsection{DosAttack.py}
+\subsubsection{Dispacher.py}
+Created after multiserver and cluster in order to have in mind how packets should communicate and their structure, the dispacher is the first line of defense controlled by our honeypot. All the new connection from outside the network are sent to the dispacher. Here we have 3 list in python, one for the trusted socket named socketWhiteList, that could communicate with the server. Every socket in the white list have a personal socket from the dispacher to the server, the couple is saved in the list coppiaSocketWhiteListSocketServer. The list socketPending save all the new connection from outside that are waiting from the response of the honeypot. When a new connection arrive to the dispacher, the packet sent are redirect to the honeypot. The packet from the dispacher to the honeypot are sent in the same socket named socket\_honey. When a response from the honeypot arrive, if the connection is approved the dispacher move the socket from the list of the pending one to the list of the whitesocket. If the connection is not approved the sockert is delete from the list of the pending one and closed forever.  When a new connection arrive, the dispache sent to the honeypot first the peer name of the new connection, and then the first packet received from it. While a connection is pending, all the other packets from outside are lost, it's just an implementation choise.
+
+\subsubsection{DosAttack.py}
 The script for the Dos attack is very simple,  after establish a connection it start send random data using the socket. 
 
 
-\subsection{honeypot.py}
-The honeypot control the packets from the new connection fro the outside to the dispacher. If the came from a terminal or a door, the new connection is approved , otherwise is not approved. The format of the data from the honeypot to the dispacher is:"ip-port: (ip, port) status: TRUSTED/UNTRUSTED" . The honeypot receive from every connection to check 2 data, the peer name that will be saved and then resent to the dispacher to specify what connection the honeypot is refeiring, and the packet to analyze. 
-
-\subsection{multiServer2.py}
-The server have to handle all the connection of the sensors. It have to connect the terminal to the doors, and send the command from the terminal to the correct door. If the command is for all the doors connected, it send a packet with the command to all of them. It have a list of sockets of the doors and a list for the socket of the terminals. As it is implemented, our system work with only one terminal connected to the server, but this could be ealisy changed. The server have to nìbe reached only by the packtes from the dispacher. 
-
+\subsubsection{Honeypot.py}
+The honeypot is the last element implemented for the system. It control the packets from the new connection from the outside to the dispacher. If the came from a terminal or a door, the new connection is approved , otherwise is not approved. The format of the data from the honeypot to the dispacher is:"ip-port: (ip, port) status: TRUSTED/UNTRUSTED" . The honeypot receive ,from every connection to check, 2 data: the peer name that will be saved and then resent to the dispacher to specify what connection the honeypot is refeiring and the packet to analyze. 
+The honeypot in principle handles only one request of checking the new connection, after a first test of the system we have decided that it could work with multiple connections.
 
 
 \subsection{ Second structure of the IoT cluster}
